@@ -1,39 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { auth, db } from '../firebase/firebaseConfig.js';
 
-import { ChartsFinancialCharts } from "../FinancialCharts";
+import { FinancialCharts } from "../FinancialCharts";
 import UploadCSVToDatabase from "../UploadCSVToDatabase";
 import { useCollectionData } from "react-firebase-hooks/firestore";
+import { Investment } from "./Investment";
 
 function FinanceTracker() {
-  const savingsRef = db.collection("savings");
-  const query = savingsRef.orderBy("date").limit(200);
-  const [savings] = useCollectionData(query, { idField: "id" });
+  // const savingsRef = db.collection("savings");
+  // const query = savingsRef.orderBy("date").limit(200);
+  // const [savings] = useCollectionData(query, { idField: "id" });
   const [locations, setLocations] = useState([]);
-  const [documents, setDocuments] = useState([])
+  const [documents, setDocuments] = useState({savings:[], investments:[]})
   const [investments, setInvestments] = useState([]);
+  const [savings, setSavings] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(undefined);
   const [loading, setLoading] = useState({savings: false, locations: true, investments: true});
   const [user, setUser] = useState({})
 
 
-  //============================================================================================================================
-  // API INFO:
-  // ALPHA VANTAGE
-  const apiKey = "KZKF9TGFQ4X4CAD9";
-  var alphaUrl = `https://www.alphavantage.co/query?function=HT_DCPHASE&symbol=IBM&interval=daily&series_type=close&apikey=${apiKey}`;
-  //============================================================================================================================
+
 
   useEffect(() => {
     getAllCashLocations();
     setUser(auth.currentUser);
     fetchAllDocuments("investments");
+    fetchAllDocuments("savings");
     setLoading({locations: false, investments: false});
 
-    // AXIOS > MOVE TO ANOTHER FUNCTION
-    // axios.get(alphaUrl).then((response) => {
-    //   console.log(response.data);
-    // });
   }, []);
 
   /**
@@ -59,24 +53,29 @@ function FinanceTracker() {
     
     /**
      * Fetches all investments in db for user. In time this will need to be able to select bank subsets.
+     * Move the setters out of this funciton
+     * Make sure the document you're fetching has a date.
      */
     const fetchAllDocuments = (docName) => {
-      console.log(docName);
-      const docsRef = db.collection(docName);
+      const docsRef = db.collection(docName).orderBy("date").limit(200);
       let docsArray = [];
       docsRef
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          console.log(doc.data());
+          // console.log(doc.data());
           docsArray.push(doc);
         });
-        setDocuments({[docName]: docsArray});
-        // setLoading({[docName]:false});
+        switch (docName) {
+          case "savings": setSavings(docsArray); break;
+          case "investments": setInvestments(docsArray); break;
+          default: break;
+        }
+        setLoading({[docName]:false});
       })
       .catch((err) => {
         console.log("Error getting documents", err);
-        // setLoading({[docName]:false});
+        setLoading({[docName]:false});
       });
   };
 
@@ -84,15 +83,14 @@ function FinanceTracker() {
   return (
     <>
       <UploadCSVToDatabase/>
-      {console.log(locations)}
       {loading.locations ? (
         <p>Loading...</p>
       ) : (
         locations.map((location) => (
           <div key={location.id}>
             <button>{location.data().description}</button>
-            <ChartsFinancialCharts
-              amounts={savings.filter((entry) => entry.bank === location.id)}
+            <FinancialCharts
+              amounts={savings.filter((entry) => entry.data().bank === location.id).map(entry => entry.data())}
               bank={location.data()}
             />
             {/* Add an new amount */}
@@ -101,11 +99,8 @@ function FinanceTracker() {
             <button>Show Trend Line</button>
             <button>Show Investments</button>
             {investments &&
-              investments
-                .filter((i) => i.bank === location.id)
-                .map((investment) => {
-                  <h4>{investment.bank}</h4>;
-                })}
+              investments.filter((entry) => entry.data().bank === location.id).map((investment, i) =>  <Investment key={i} document={investment.data()}/>
+                )}
           </div>
         ))
       )}
@@ -114,3 +109,5 @@ function FinanceTracker() {
 }
 
 export default FinanceTracker;
+
+

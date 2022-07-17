@@ -10,11 +10,11 @@ import { StandardChart } from "./Charts";
  * @returns
  */
 
-export function ChartsFinancialCharts({ amounts, bank }) {
+export function FinancialCharts({ amounts, bank }) {
   return (
     <div>
       <h3>{bank.description}</h3>
-      <p>{`Current value: ${amounts[amounts.length - 1].amount}`}</p>
+      {amounts.length && <p>{`Current value: ${amounts[amounts.length - 1].amount}`}</p>}
 
       <StandardChart data={amounts} />
       {/* <table>
