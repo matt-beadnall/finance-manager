@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { auth, db } from './firebase/firebaseConfig.js';
+import { auth, db, firebase } from './firebase/firebaseConfig.js';
 
 import Papa from "papaparse";
 
@@ -59,22 +59,22 @@ export default function UploadCSVToDatabase() {
 
       uploadData(parsedData);
 
-      setData(parsedData);
+      // setData(parsedData);
     };
     reader.readAsText(file);
   };
 
   const uploadData = async (data) => {
     console.log(data);
-    const bucketsRef = db.collection("wallet");
+    const bucketsRef = db.collection("savings");
     await data.forEach((entry) =>
       bucketsRef.add({
         amount: entry.amount,
         bank: entry.bank,
-        createdAt: firestore.FieldValue.serverTimestamp(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         currency: entry.currency,
         date: new Date(entry.date),
-        // uid: auth.currentUser.uid
+        uid: auth.currentUser.uid
       })
     );
   };
