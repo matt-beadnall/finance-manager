@@ -7,10 +7,15 @@ import React from 'react';
 //     return new Date(tickItem.seconds * 1000).toLocaleDateString();
 //   }
 
-export function StandardChart(props) {
+const formatXAxis = (data) =>{
+    console.log(data)
+    data.seconds.toDate().toString();
+}
+
+export function StandardChart({data}) {
 
     return (
-        <LineChart width={500} height={300} data={props.data}>
+        <LineChart width={500} height={300} data={data}>
         {/* <XAxis dataKey="date" tickFormatter={formatXAxis} /> */}
         <XAxis dataKey="date" />
         <YAxis/>
