@@ -1,13 +1,12 @@
 import React, { useState } from "react";
+import { auth, db } from './firebase/firebaseConfig.js';
 
 import Papa from "papaparse";
-import { auth } from "firebase-admin";
-import firebase from "firebase/compat/app";
 
 // Allowed extensions for input file
 const allowedExtensions = ["csv"];
 
-export default function UploadCSVToDatabase(props) {
+export default function UploadCSVToDatabase() {
   const [isDisplayed, setIsDisplayed] = useState(false);
 
   // This state will store the parsed data
@@ -67,15 +66,15 @@ export default function UploadCSVToDatabase(props) {
 
   const uploadData = async (data) => {
     console.log(data);
-    const bucketsRef = firestore.collection("wallet");
+    const bucketsRef = db.collection("wallet");
     await data.forEach((entry) =>
       bucketsRef.add({
         amount: entry.amount,
         bank: entry.bank,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: firestore.FieldValue.serverTimestamp(),
         currency: entry.currency,
         date: new Date(entry.date),
-        uid: auth.currentUser.uid
+        // uid: auth.currentUser.uid
       })
     );
   };

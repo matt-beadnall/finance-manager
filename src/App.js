@@ -1,11 +1,11 @@
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
 
-import React, { useRef } from "react";
 import { SignIn, SignOut } from "./Authentication";
 
-import { FinanceTracker } from "./FinanceTracker";
-import axios from "axios";
+import FinanceTracker from "./FinanceTracker";
+import React from "react";
+import { auth } from './firebase/firebaseConfig.js';
 import firebase from "firebase/compat/app";
 import { useAuthState } from "react-firebase-hooks/auth";
 
@@ -18,9 +18,6 @@ firebase.initializeApp({
   appId: "1:977205835382:web:a9b78ad9671e2983409157",
 });
 
-const auth = firebase.auth();
-const firestore = firebase.firestore();
-
 function App() {
   const [user] = useAuthState(auth);
 
@@ -28,14 +25,14 @@ function App() {
     <div className="App">
       <header>
         <h1>Finance Manager</h1>
-        <SignOut auth={auth}/>
+        <SignOut/>
       </header>
 
       <section>
         {user ? (
-          <FinanceTracker auth={auth} firestore={firestore} />
+          <FinanceTracker/>
         ) : (
-          <SignIn auth={auth} />
+          <SignIn />
         )}
       </section>
     </div>

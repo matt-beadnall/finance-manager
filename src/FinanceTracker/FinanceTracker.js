@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { auth, db } from '../firebase/firebaseConfig.js';
 
-import { ChartsFinancialCharts } from "./FinancialCharts";
-import UploadCSVToDatabase from "./UploadCSVToDatabase";
-import { firestore } from "./App";
+import { ChartsFinancialCharts } from "../FinancialCharts";
+import UploadCSVToDatabase from "../UploadCSVToDatabase";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 
-export function FinanceTracker({auth, firestore}) {
-  const walletRef = firestore.collection("wallet");
-  const query = walletRef.orderBy("date").limit(200);
+function FinanceTracker() {
+  // const walletRef = db.collection("wallet");
+  // const query = walletRef.orderBy("date").limit(200);
+  // const [wallet] = useCollectionData(query, { idField: "id" });
   const [locations, setLocations] = useState([]);
   const [documents, setDocuments] = useState([])
   const [investments, setInvestments] = useState([]);
@@ -15,7 +16,6 @@ export function FinanceTracker({auth, firestore}) {
   const [loading, setLoading] = useState({locations: true, investments: true});
   const [user, setUser] = useState({})
 
-  const [wallet] = useCollectionData(query, { idField: "id" });
 
   //============================================================================================================================
   // API INFO:
@@ -25,9 +25,9 @@ export function FinanceTracker({auth, firestore}) {
   //============================================================================================================================
 
   useEffect(() => {
-    getAllCashLocations();
-    setUser(auth.currentUser);
-    fetchAllDocuments()
+    // getAllCashLocations();
+    // setUser(auth.currentUser);
+    // fetchAllDocuments("investments");
 
     // AXIOS > MOVE TO ANOTHER FUNCTION
     // axios.get(alphaUrl).then((response) => {
@@ -35,31 +35,17 @@ export function FinanceTracker({auth, firestore}) {
     // });
   }, []);
 
-  const getInvestments = ({ bank }) => {
-    const investmentArray = fetchAllInvestmentsForBank(bank);
-    console.log("investmentArray", investmentArray);
-    setInvestments(
-      investments.concat[
-        {
-          bank: bank,
-          investments: investmentArray,
-        }
-      ]
-    );
-  };
-
   /**
    * Add caching to this! React hooks
    */
   const getAllCashLocations = () => {
-    const locationsRef = firestore.collection("location");
+    const locationsRef = db.collection("location");
     let locationsArray = [];
     locationsRef
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           locationsArray.push(doc);
-          // getInvestments(doc.id);
         });
         setLocations(locationsArray);
         setLoading({locations:false});
@@ -73,9 +59,9 @@ export function FinanceTracker({auth, firestore}) {
   /**
    * Fetches all investments in db for user. In time this will need to be able to select bank subsets.
    */
-  const fetchAllDocuments = ({docName}) => {
-    const docsRef = firestore
-      .collection(docName);
+  const fetchAllDocuments = (docName) => {
+    console.log(docName);
+    const docsRef = db.collection(docName);
     let docsArray = [];
     docsRef
       .get()
@@ -92,12 +78,10 @@ export function FinanceTracker({auth, firestore}) {
       });
   };
 
-  console.log(locations);
-
   // FinanceTracker return
   return (
     <>
-      <UploadCSVToDatabase db={firestore}/>
+      <UploadCSVToDatabase/>
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -125,3 +109,5 @@ export function FinanceTracker({auth, firestore}) {
     </>
   );
 }
+
+export default FinanceTracker;

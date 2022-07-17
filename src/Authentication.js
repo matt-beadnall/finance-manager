@@ -1,11 +1,12 @@
+import { auth, firebase } from './firebase/firebaseConfig.js';
+
 import React from "react";
-import firebase from "firebase/compat/app";
 
 /**
  * Add a Google logo SVG
  * @returns 
  */
-export function SignIn({auth}) {
+export function SignIn() {
   const signInWithGoogle = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider);
@@ -20,7 +21,7 @@ export function SignIn({auth}) {
   );
 }
 
-export function SignOut({auth}) {
+export function SignOut() {
   return (
     auth.currentUser && (
       <button className="sign-out" onClick={() => auth.signOut()}>
