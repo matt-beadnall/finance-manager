@@ -728,17 +728,18 @@ export function Investment({ document }) {
     },
   };
 
-  const [showTable, setShowTable] = useState(false);
+  const [tableVisible, setTableVisible] = useState(false);
+  const [chartVisible, setChartVisible] = useState(false);
   const [stockData, setStockData] = useState(TEST_DATA);
 
   const TIME_SERIES_INTRADAY = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${document.ticker}&interval=5min&apikey=${apiKey}`;
   useEffect(() => {
     // N.B.DISABLE TO SAVE API CALLS. Will Fall back to TEST_DATA.
     // Need to limit this to only querying maximum every 15 mins
-    axios.get(TIME_SERIES_INTRADAY).then((response) => {
-      console.log(response.data);
-      setStockData(response.data);
-    });
+    // axios.get(TIME_SERIES_INTRADAY).then((response) => {
+    //   console.log(response.data);
+    //   setStockData(response.data);
+    // });
   }, [TIME_SERIES_INTRADAY]);
 
   /**
@@ -748,47 +749,62 @@ export function Investment({ document }) {
     const array = [];
     console.log(data);
     data.forEach(([key, value]) =>
-      array.push(
-        [(new Date(key)).getTime(),[Number(value[OPEN_VALUE]), Number(value[HIGH_VALUE]), Number(value[LOW_VALUE]), Number(value[CLOSE_VALUE])]])
+      array.push([
+        new Date(key).getTime(),
+        [
+          Number(value[OPEN_VALUE]),
+          Number(value[HIGH_VALUE]),
+          Number(value[LOW_VALUE]),
+          Number(value[CLOSE_VALUE]),
+        ],
+      ])
     );
     return array;
   };
 
-
   const timeSeries = Object.entries(stockData["Time Series (5min)"]);
+  const convertedTimeSeries = useMemo(() => convertData(timeSeries), [document])
 
   return (
     <>
       <h4>{document.ticker}</h4>
       <p>{stockData["Meta Data"]["1. Information"]}</p>
-      <StockChart
-        data={useMemo(() => convertData(timeSeries), [timeSeries])}
-      ></StockChart>
-      <button onClick={() => setShowTable(!showTable)}>{showTable ? 'Hide' : 'Show'} Data</button>
-      {showTable && timeSeries.map(([key, value]) => (
-        <table>
-          <thead>
-            <tr>
-              <th>time</th>
-              <th>open</th>
-              <th>high</th>
-              <th>low</th>
-              <th>close</th>
-              <th>volume</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr key={key}>
-              <td>{key}</td>
-              <td>{value[OPEN_VALUE]}</td>
-              <td>{value[HIGH_VALUE]}</td>
-              <td>{value[LOW_VALUE]}</td>
-              <td>{value[CLOSE_VALUE]}</td>
-              <td>{value[VOLUME]}</td>
-            </tr>
-          </tbody>
-        </table>
-      ))}
+      <button onClick={() => setChartVisible(!chartVisible)}>
+        {chartVisible ? "Hide" : "Show"} Chart
+      </button>
+      {chartVisible && 
+        <StockChart
+          data={convertedTimeSeries} 
+        ></StockChart>
+      }
+      <button onClick={() => setTableVisible(!tableVisible)}>
+        {tableVisible ? "Hide" : "Show"} Table
+      </button>
+      {tableVisible &&
+        timeSeries.map(([key, value]) => (
+          <table>
+            <thead>
+              <tr>
+                <th>time</th>
+                <th>open</th>
+                <th>high</th>
+                <th>low</th>
+                <th>close</th>
+                <th>volume</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr key={key}>
+                <td>{key}</td>
+                <td>{value[OPEN_VALUE]}</td>
+                <td>{value[HIGH_VALUE]}</td>
+                <td>{value[LOW_VALUE]}</td>
+                <td>{value[CLOSE_VALUE]}</td>
+                <td>{value[VOLUME]}</td>
+              </tr>
+            </tbody>
+          </table>
+        ))}
       {/* <p>{Object.entries(stockData['Time Series (5min)'])}</p> */}
       {/* {stockData.map((stock) => (} */}
     </>
