@@ -1,6 +1,6 @@
 import { React, useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { StockChart } from "../Charts";
+import { StockChart } from "./Charts";
 
 //============================================================================================================================
 // API INFO:
@@ -729,68 +729,92 @@ export function Investment({ document }) {
   };
 
   const [showTable, setShowTable] = useState(false);
+  const [showChart, setShowChart] = useState(false);
   const [stockData, setStockData] = useState(TEST_DATA);
 
   const TIME_SERIES_INTRADAY = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${document.ticker}&interval=5min&apikey=${apiKey}`;
   useEffect(() => {
     // N.B.DISABLE TO SAVE API CALLS. Will Fall back to TEST_DATA.
     // Need to limit this to only querying maximum every 15 mins
-    axios.get(TIME_SERIES_INTRADAY).then((response) => {
-      console.log(response.data);
-      setStockData(response.data);
-    });
+    fetchStockData(TIME_SERIES_INTRADAY, setStockData);
   }, [TIME_SERIES_INTRADAY]);
 
-  /**
-   * Need to memoise this
-   */
   const convertData = (data) => {
     const array = [];
-    console.log(data);
     data.forEach(([key, value]) =>
       array.push(
-        [(new Date(key)).getTime(),[Number(value[OPEN_VALUE]), Number(value[HIGH_VALUE]), Number(value[LOW_VALUE]), Number(value[CLOSE_VALUE])]])
+        [(new Date(key)).getTime(), [Number(value[OPEN_VALUE]), Number(value[HIGH_VALUE]), Number(value[LOW_VALUE]), Number(value[CLOSE_VALUE])]])
     );
     return array;
   };
+
+
+  const fetchStockData = (axiosUrl, setter) => {
+    const time = Date.now();
+    console.log(`${time} - Axios request: ${axiosUrl}`)
+    axios.get(axiosUrl)
+    .then((response) => {
+      console.log(`${time} - Axios request successful!`)
+      setter(response.data);
+    })
+    .catch((error) => {console.log(error)});
+  }
 
 
   const timeSeries = Object.entries(stockData["Time Series (5min)"]);
 
   return (
     <>
-      <h4>{document.ticker}</h4>
-      <p>{stockData["Meta Data"]["1. Information"]}</p>
-      <StockChart
-        data={useMemo(() => convertData(timeSeries), [timeSeries])}
-      ></StockChart>
-      <button onClick={() => setShowTable(!showTable)}>{showTable ? 'Hide' : 'Show'} Data</button>
-      {showTable && timeSeries.map(([key, value]) => (
-        <table>
-          <thead>
-            <tr>
-              <th>time</th>
-              <th>open</th>
-              <th>high</th>
-              <th>low</th>
-              <th>close</th>
-              <th>volume</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr key={key}>
-              <td>{key}</td>
-              <td>{value[OPEN_VALUE]}</td>
-              <td>{value[HIGH_VALUE]}</td>
-              <td>{value[LOW_VALUE]}</td>
-              <td>{value[CLOSE_VALUE]}</td>
-              <td>{value[VOLUME]}</td>
-            </tr>
-          </tbody>
-        </table>
-      ))}
-      {/* <p>{Object.entries(stockData['Time Series (5min)'])}</p> */}
-      {/* {stockData.map((stock) => (} */}
+      <h3>{document.ticker}</h3>
+      <StockChart  visible={showChart} setVisible={setShowChart} data={useMemo(() => convertData(timeSeries), [timeSeries])} />
+      {/* Show stocks held breakdown (date invested and amount). From this work out current amount and % change (Daily, All time) */}
+      <StockBreakdown />
+      <TimeSeriesData visible={showTable} setVisible={setShowTable} data={timeSeries} />
     </>
   );
+}
+
+/**
+ * 
+ * @param visible boolean which controls visibility of the table
+ * @param timeSeries data to display
+ * @returns 
+ */
+function TimeSeriesData({ visible, setVisible, data }) {
+  return (
+    <>
+      <button onClick={() => setVisible(!visible)}>{visible ? 'Hide' : 'Show'} Data</button>
+      <div style={{ display: visible ? "block" : "none" }}>
+        {data.map(([key, value]) => (
+          <table key={key}>
+            <thead>
+              <tr>
+                <th>time</th>
+                <th>open</th>
+                <th>high</th>
+                <th>low</th>
+                <th>close</th>
+                <th>volume</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr key={key}>
+                <td>{key}</td>
+                <td>{value[OPEN_VALUE]}</td>
+                <td>{value[HIGH_VALUE]}</td>
+                <td>{value[LOW_VALUE]}</td>
+                <td>{value[CLOSE_VALUE]}</td>
+                <td>{value[VOLUME]}</td>
+              </tr>
+            </tbody>
+          </table>
+        ))}
+      </div>
+    </>
+  );
+
+}
+
+function StockBreakdown() {
+  
 }
