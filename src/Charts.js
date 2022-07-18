@@ -26,9 +26,7 @@ export function StandardChart({ data }) {
   );
 }
 
-export function StockChart({ data }) {
-  console.log(data);
-
+export function StockChart({ visible, setVisible, data }) {
   const options = {
     plotOptions: {
       candlestick: {
@@ -46,20 +44,8 @@ export function StockChart({ data }) {
   ];
   return (
     <>
-      <Chart options={options} series={series} type="candlestick" width="80%" />
+      <button onClick={() => setVisible(!visible)}>{visible ? 'Hide' : 'Show'} Chart</button>
+      <Chart style={{ display: visible ? "block" : "none" }} options={options} series={series} type="candlestick" width="600px" />
     </>
-    //     <LineChart width={500} height={300} data={data}>
-    //     {/* <XAxis dataKey="date" tickFormatter={formatXAxis} /> */}
-    //     <XAxis dataKey="date" />
-    //     <YAxis type="number" domain={['dataMin', 'dataMax']} />
-    //     <CartesianGrid stroke="#eee"/>
-    //     <Line type="monotone" dot={false} dataKey="open" stroke="#82ca9d" />
-    //     <Line type="monotone" dot={false} dataKey="high" stroke="#f0d08b" />
-    //     <Line type="monotone" dot={false} dataKey="low" stroke="#f28ff1" />
-    //     <Line type="monotone" dot={false} dataKey="close" stroke="#8ff2ec" />
-    //     {/* <Line type="monotone" dataKey="volume" stroke="#82ca9d" /> */}
-    //     <Tooltip />
-    //     <Legend />
-    //   </LineChart>
   );
 }

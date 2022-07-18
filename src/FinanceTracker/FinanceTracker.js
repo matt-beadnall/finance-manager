@@ -4,7 +4,7 @@ import { auth, db } from '../firebase/firebaseConfig.js';
 import { FinancialCharts } from "../FinancialCharts";
 import UploadCSVToDatabase from "../UploadCSVToDatabase";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { Investment } from "./Investment";
+import { Investment } from "../Investment";
 
 function FinanceTracker() {
   // const savingsRef = db.collection("savings");
