@@ -9,9 +9,6 @@ const allowedExtensions = ["csv"];
 export default function UploadCSVToDatabase() {
   const [isDisplayed, setIsDisplayed] = useState(false);
 
-  // This state will store the parsed data
-  const [data, setData] = useState([]);
-
   // It state will contain the error when
   // correct file extension is not used
   const [error, setError] = useState("");
@@ -81,7 +78,7 @@ export default function UploadCSVToDatabase() {
 
   return (
     <div>
-      <button class="bg-slate-500 hover:bg-slate-700 text-white py-1 px-2 rounded" onClick={() => setIsDisplayed(!isDisplayed)}>
+      <button className="flex hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1" onClick={() => setIsDisplayed(!isDisplayed)}>
         {isDisplayed ? "X" : "Upload Data"}
       </button>
       {isDisplayed && (

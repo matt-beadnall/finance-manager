@@ -13,7 +13,9 @@ import { StandardChart } from "./Charts";
 export function FinancialCharts({ amounts, bank }) {
   return (
     <div>
-      {amounts.length && <p>{`Current value: ${amounts[amounts.length - 1].amount}`}</p>}
+      {amounts.length && (
+        <p className="flex justify-start px-2 py-1 rounded-md m-1">{`Current Total: £${amounts[amounts.length - 1].amount}`}</p>
+      )}
 
       <StandardChart data={amounts} />
       {/* <table>

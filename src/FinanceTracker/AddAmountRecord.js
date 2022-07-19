@@ -15,11 +15,15 @@ export function AddAmountRecord() {
       >
         Add Amount
       </button>
-      {<div style={{ display: visible ? "block" : "none" }}><form>
-        <input type="text" placeholder="Amount" />
-        <input type="text" placeholder="Date" />
-        <input type="text" placeholder="Note" />
-      </form></div>}
+      {
+        <div style={{ display: visible ? "block" : "none" }}>
+          <form>
+            <input type="text" placeholder="Amount" />
+            <input type="text" placeholder="Date" />
+            <input type="text" placeholder="Note" />
+          </form>
+        </div>
+      }
     </>
   );
 }

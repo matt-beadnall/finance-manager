@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { auth, db } from '../firebase/firebaseConfig.js';
 
-import { FinancialCharts } from "../FinancialCharts";
 import UploadCSVToDatabase from "../UploadCSVToDatabase";
-import { useCollectionData } from "react-firebase-hooks/firestore";
-import Investment from "../Investment/Investment";
-import { AddAmountRecord } from "./AddAmountRecord";
+import FinanceBucket from "./FinanceBucket";
 
 function FinanceTracker() {
   // const savingsRef = db.collection("savings");
   // const query = savingsRef.orderBy("date").limit(200);
   // const [savings] = useCollectionData(query, { idField: "id" });
   const [locations, setLocations] = useState([]);
-  const [documents, setDocuments] = useState({savings:[], investments:[]})
   const [investments, setInvestments] = useState([]);
   const [savings, setSavings] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState(undefined);
+  // const [selectedLocation, setSelectedLocation] = useState(undefined);
   const [loading, setLoading] = useState({savings: false, locations: true, investments: true});
   const [user, setUser] = useState({})
 
@@ -80,14 +76,6 @@ function FinanceTracker() {
       });
   };
 
-  const handleShowTrendLine = (e) => {
-    e.preventDefault();
-  }
-
-  const handleShowInvestments = (e) => {
-    e.preventDefault();
-  }
-
   // FinanceTracker return
   return (
     <>
@@ -96,32 +84,11 @@ function FinanceTracker() {
         <p>Loading...</p>
       ) : (
         locations.map((location) => (
-          <div key={location.id}>
-            <button className="bg-stone-400 hover:bg-stone-500 text-white py-1 px-2 rounded">{location.data().description}</button>
-            <FinancialCharts
-              amounts={savings.filter((entry) => entry.data().bank === location.id).map(entry => entry.data())}
-              bank={location.data()}
-            />
-            <AddAmountRecord />
-            <button onClick={handleShowTrendLine} className="bg-neutral-400 hover:bg-neutral-500 text-white py-1 px-2 rounded">Show Trend Line</button>
-            <button onClick={handleShowInvestments} className="bg-zinc-400 hover:bg-zinc-500 text-white py-1 px-2 rounded">Show Investments</button>
-            {/* everything below can be moved inside the investments class */}
-            {investments &&
-              investments.filter((entry) => entry.data().bank === location.id).map((investment, i) =>  <Investment key={i} document={investment.data()}/>
-                )}
-          </div>
-        ))
+          <FinanceBucket key={location.id} location={location} savings={savings} investments={investments} />)
+        )
       )}
     </>
   );
 }
 
 export default FinanceTracker;
-
-
-
-
-    function undefined({handleShowInvestments}) {
-      return (<button onClick={handleShowInvestments} className="bg-zinc-400 hover:bg-zinc-500 text-white py-1 px-2 rounded">Show Investments</button>);
-    }
-  

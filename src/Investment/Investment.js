@@ -767,7 +767,7 @@ export default function Investment({ document }) {
   return (
     <>
       <h3>{document.ticker}</h3>
-      <StockChart  visible={showChart} setVisible={setShowChart} data={useMemo(() => convertData(timeSeries), [timeSeries])} />
+      <StockChart  visible={showChart} setVisible={setShowChart} data={convertedTimeSeries} />
       {/* Show stocks held breakdown (date invested and amount). From this work out current amount and % change (Daily, All time) */}
       <StockBreakdown />
       <TimeSeriesData visible={showTable} setVisible={setShowTable} data={timeSeries} />
