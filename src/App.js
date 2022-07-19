@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="App">
       <header>
-        <h1>Finance Manager</h1>
+        <h1 className="text-3xl">Finance Manager</h1>
         <SignOut/>
       </header>
 

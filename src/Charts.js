@@ -12,6 +12,9 @@ import Chart from "react-apexcharts";
 
 import React from "react";
 
+/**
+ * Made from recharts @LineChart
+ */
 export function StandardChart({ data }) {
   return (
     <LineChart width={500} height={300} data={data}>

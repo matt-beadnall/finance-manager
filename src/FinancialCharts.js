@@ -13,7 +13,6 @@ import { StandardChart } from "./Charts";
 export function FinancialCharts({ amounts, bank }) {
   return (
     <div>
-      <h3>{bank.description}</h3>
       {amounts.length && <p>{`Current value: ${amounts[amounts.length - 1].amount}`}</p>}
 
       <StandardChart data={amounts} />

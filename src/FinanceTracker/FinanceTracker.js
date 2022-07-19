@@ -4,7 +4,8 @@ import { auth, db } from '../firebase/firebaseConfig.js';
 import { FinancialCharts } from "../FinancialCharts";
 import UploadCSVToDatabase from "../UploadCSVToDatabase";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { Investment } from "../Investment";
+import Investment from "../Investment/Investment";
+import { AddAmountRecord } from "./AddAmountRecord";
 
 function FinanceTracker() {
   // const savingsRef = db.collection("savings");
@@ -79,6 +80,14 @@ function FinanceTracker() {
       });
   };
 
+  const handleShowTrendLine = (e) => {
+    e.preventDefault();
+  }
+
+  const handleShowInvestments = (e) => {
+    e.preventDefault();
+  }
+
   // FinanceTracker return
   return (
     <>
@@ -88,16 +97,15 @@ function FinanceTracker() {
       ) : (
         locations.map((location) => (
           <div key={location.id}>
-            <button>{location.data().description}</button>
+            <button className="bg-stone-400 hover:bg-stone-500 text-white py-1 px-2 rounded">{location.data().description}</button>
             <FinancialCharts
               amounts={savings.filter((entry) => entry.data().bank === location.id).map(entry => entry.data())}
               bank={location.data()}
             />
-            {/* Add an new amount */}
-            <h4>Functions</h4>
-            <button>Add Amount</button>
-            <button>Show Trend Line</button>
-            <button>Show Investments</button>
+            <AddAmountRecord />
+            <button onClick={handleShowTrendLine} className="bg-neutral-400 hover:bg-neutral-500 text-white py-1 px-2 rounded">Show Trend Line</button>
+            <button onClick={handleShowInvestments} className="bg-zinc-400 hover:bg-zinc-500 text-white py-1 px-2 rounded">Show Investments</button>
+            {/* everything below can be moved inside the investments class */}
             {investments &&
               investments.filter((entry) => entry.data().bank === location.id).map((investment, i) =>  <Investment key={i} document={investment.data()}/>
                 )}
@@ -111,3 +119,9 @@ function FinanceTracker() {
 export default FinanceTracker;
 
 
+
+
+    function undefined({handleShowInvestments}) {
+      return (<button onClick={handleShowInvestments} className="bg-zinc-400 hover:bg-zinc-500 text-white py-1 px-2 rounded">Show Investments</button>);
+    }
+  

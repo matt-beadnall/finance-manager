@@ -81,7 +81,7 @@ export default function UploadCSVToDatabase() {
 
   return (
     <div>
-      <button onClick={() => setIsDisplayed(!isDisplayed)}>
+      <button class="bg-slate-500 hover:bg-slate-700 text-white py-1 px-2 rounded" onClick={() => setIsDisplayed(!isDisplayed)}>
         {isDisplayed ? "X" : "Upload Data"}
       </button>
       {isDisplayed && (
