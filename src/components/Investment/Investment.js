@@ -1,6 +1,7 @@
-import { React, useEffect, useState, useMemo } from "react";
-import axios from "axios";
+import { React, useEffect, useMemo, useState } from "react";
+
 import { StockChart } from "../Charts";
+import axios from "axios";
 
 //============================================================================================================================
 // API INFO:
@@ -736,7 +737,7 @@ export default function Investment({ document }) {
   useEffect(() => {
     // N.B.DISABLE TO SAVE API CALLS. Will Fall back to TEST_DATA.
     // Need to limit this to only querying maximum every 15 mins
-    fetchStockData(TIME_SERIES_INTRADAY, setStockData);
+    // fetchStockData(TIME_SERIES_INTRADAY, setStockData);
   }, [TIME_SERIES_INTRADAY]);
 
   const convertData = (data) => {
@@ -769,7 +770,6 @@ export default function Investment({ document }) {
       <h3>{document.ticker}</h3>
       <StockChart  visible={showChart} setVisible={setShowChart} data={convertedTimeSeries} />
       {/* Show stocks held breakdown (date invested and amount). From this work out current amount and % change (Daily, All time) */}
-      <StockBreakdown />
       <TimeSeriesData visible={showTable} setVisible={setShowTable} data={timeSeries} />
     </>
   );
@@ -815,7 +815,4 @@ function TimeSeriesData({ visible, setVisible, data }) {
   );
 
 }
-
-function StockBreakdown() {
   
-}

@@ -1,5 +1,5 @@
 import React from "react";
-import { StandardChart } from "./Charts";
+import { StandardChart } from "./components/Charts";
 
 /**
  * Logic only for the read-only display of charts

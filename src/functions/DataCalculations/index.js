@@ -1,0 +1,1 @@
+export { getTotals } from './DataCalculations'

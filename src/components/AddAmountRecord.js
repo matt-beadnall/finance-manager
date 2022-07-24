@@ -11,7 +11,7 @@ export function AddAmountRecord() {
     <>
       <button
         onClick={() => setVisible(!visible)}
-        className="bg-stone-400 hover:bg-stone-500 text-white py-1 px-2 rounded"
+        className="bg-white hover:bg-neutral-100 text-gray-500 border-2 py-1 px-2 rounded m-1"
       >
         Add Amount
       </button>

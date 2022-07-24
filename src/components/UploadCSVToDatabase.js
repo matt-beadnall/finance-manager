@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { auth, db, firebase } from './firebase/firebaseConfig.js';
+import { auth, db, firebase } from '../firebase/firebaseConfig.js';
 
 import Papa from "papaparse";
 
