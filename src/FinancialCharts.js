@@ -10,35 +10,20 @@ import { StandardChart } from "./components/Charts";
  * @returns
  */
 
-export function FinancialCharts({ amounts, bank }) {
+export function FinancialCharts({ amounts, selectedAccounts }) {
+  
   return (
     <div>
-      {amounts.length && (
-        <p className="flex justify-start px-2 py-1 rounded-md m-1">{`Current Total: £${amounts[amounts.length - 1].amount}`}</p>
-      )}
+      {/* {amounts.length && selectedAccounts.map(account => <p className="flex justify-start px-2 py-1 text-gray-500 rounded-md m-1">{`${account.id} Current Account Value: ${getCurrentAccountValue()}`}</p>)
+      } */}
 
-      <StandardChart data={amounts} />
-      {/* <table>
-              <thead>
-                <tr>
-                  <th>amount</th>
-                  <th>bank</th>
-                  <th>currency</th>
-                  <th>date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {amounts &&
-                  amounts.map((row, i) => (
-                    <tr key={i}>
-                      <td>{row.amount}</td>
-                      <td>{row.bank}</td>
-                      <td>{row.currency}</td>
-                      <td>{row.date.seconds}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table> */}
+      <StandardChart data={amounts} selectedAccounts={selectedAccounts}/>
     </div>
   );
+
+  function getCurrentAccountValue() {
+    if (amounts.length) {
+      return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(amounts[amounts.length - 1].amount);
+    } 
+  }
 }

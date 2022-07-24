@@ -20,33 +20,34 @@ function formatXAxis(tickItem) {
 /**
  * Made from recharts @LineChart
  */
-export function StandardChart({ data }) {
+export function StandardChart({ data, selectedAccounts }) {
+  console.log("selectedAccounts", Object.entries(selectedAccounts));
   return (
     <LineChart width={500} height={300} data={data}>
       {/* <XAxis dataKey="date" tickFormatter={formatXAxis} /> */}
       <XAxis dataKey="date" tickFormatter={formatXAxis} />
       <YAxis />
       <CartesianGrid stroke="#eee" />
-      <Line type="monotone" dataKey="amount" stroke="#8884d8" />
+      {Object.entries(selectedAccounts).map((account) => 
+        account[1] && <Line type="monotone" dataKey={account[0]} stroke="#8884d8" />
+      )}
       <Tooltip />
-      <Legend />
     </LineChart>
   );
 }
 
 /**
- * Made from recharts @LineChart
+ *
  */
 export function TotalsChart({ data }) {
   return (
-    <LineChart width={800} height={300} data={data}>
+    <LineChart margin={0} width={800} height={200} data={data}>
       {/* <XAxis dataKey="date" tickFormatter={formatXAxis} /> */}
-      <XAxis dataKey="date" tickFormatter={formatXAxis} />
-      <YAxis />
-      <CartesianGrid stroke="#eee" />
-      <Line type="monotone" dataKey="amount" stroke="#8884d8" />
+      <XAxis padding={0} tickMargin="0" tick={false} />
+      <YAxis tick={false} domain={["dataMin", "domainMax"]} />
+      <CartesianGrid stroke="#fff" />
+      <Line dataKey="amount" stroke="#82ca9d" />
       <Tooltip />
-      <Legend />
     </LineChart>
   );
 }

@@ -3,9 +3,7 @@ import { SignOut } from "../Authentication.js";
 
 export function UserLoginStatus({ auth }) {
   const { uid, photoURL, displayName } = auth.currentUser;
-
-  console.log(auth);
-
+  
   return (
     <div className="flex bg-slate-100 p-3">
       <img

@@ -3,7 +3,7 @@ import { FinancialCharts } from "../FinancialCharts";
 import Investment from "./Investment";
 import React from "react";
 
-export default function AccountHistoryChart({ savings, investments, bank, selectedBucket }) {
+export default function AccountHistoryChart({ accounts, savings, investments, bank, selectedAccounts }) {
   const handleShowTrendLine = (e) => {
     e.preventDefault();
   };
@@ -11,15 +11,14 @@ export default function AccountHistoryChart({ savings, investments, bank, select
   const handleShowInvestments = (e) => {
     e.preventDefault();
   };
-
   return (
     <>
       <div
-        style={{ display: bank === selectedBucket ? "block" : "none" }}
+        // style={{ display: bank === selectedBucket ? "block" : "none" }}
       >
         <div>
-          <FinancialCharts amounts={savings} bank={bank} />
-          <AddAmountRecord />
+          <FinancialCharts amounts={savings} selectedAccounts={selectedAccounts} />
+          <AddAmountRecord accounts={accounts}/>
           <button
             onClick={handleShowTrendLine}
             className="bg-white hover:bg-neutral-100 text-gray-500 border-2 py-1 px-2 rounded m-1"

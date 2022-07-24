@@ -1,7 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { auth, db } from "../../firebase/firebaseConfig.js";
+import {
+  getTotals,
+  sortData,
+} from "../../functions/DataCalculations/DataCalculations";
 
-import FinanceBucket from "../Account";
+import AccountHistoryChart from "../Account";
+import { AccountPicker } from "./AccountPicker";
+import { TotalsChart } from "../Charts.js";
 import UploadCSVToDatabase from "../UploadCSVToDatabase";
 import { UserLoginStatus } from "../UserLoginStatus";
 import { data } from "autoprefixer";
@@ -10,10 +16,12 @@ function FinanceTracker() {
   // const savingsRef = db.collection("savings");
   // const query = savingsRef.orderBy("date").limit(200);
   // const [savings] = useCollectionData(query, { idField: "id" });
-  const [locations, setLocations] = useState([]);
+  const [accounts, setAccounts] = useState([]);
   const [investments, setInvestments] = useState([]);
   const [savings, setSavings] = useState([]);
-  const [selectedBucket, setSelectedBucket] = useState("total");
+  const [selectedAccounts, setSelectedAccounts] = useState({});
+  const [selected, setSelected] = useState("");
+  const [compare, setCompare] = useState(false);
   const [loading, setLoading] = useState({
     savings: false,
     locations: true,
@@ -25,7 +33,7 @@ function FinanceTracker() {
 
   useEffect(() => {
     getAllCashLocations();
-    fetchAllDocuments("investments");
+    fetchAllDocuments("investments", auth.currentUser.uid);
     fetchAllDocuments("savings");
     setLoading({ locations: false, investments: false });
   }, []);
@@ -33,7 +41,7 @@ function FinanceTracker() {
   /**
    * Add caching to this! React hooks
    */
-  const getAllCashLocations = () => {
+  const getAllCashLocations = async () => {
     const locationsRef = db.collection("locations");
     let locationsArray = [];
     locationsRef
@@ -41,8 +49,20 @@ function FinanceTracker() {
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           locationsArray.push(doc);
+          if (doc.id !== undefined) {
+            let updateValue = selectedAccounts;
+            updateValue[doc.id] = false;
+            setSelectedAccounts(updateValue);
+          }
         });
-        setLocations(locationsArray);
+        setAccounts(locationsArray);
+        setSelected(locationsArray[0].id);
+        if (selectedAccounts !== undefined) {
+          setSelectedAccounts({
+            ...selectedAccounts,
+            [locationsArray[0].id]: true,
+          });
+        }
         setLoading({ locations: false });
       })
       .catch((err) => {
@@ -56,8 +76,12 @@ function FinanceTracker() {
    * Move the setters out of this funciton
    * Make sure the document you're fetching has a date.
    */
-  const fetchAllDocuments = (docName) => {
-    const docsRef = db.collection(docName).orderBy("date").limit(200);
+  const fetchAllDocuments = (docName, uid) => {
+    const docsRef = db
+      .collection(docName)
+      // .where("uid","==",uid)
+      .orderBy("date")
+      .limit(200);
     let docsArray = [];
     docsRef
       .get()
@@ -83,13 +107,31 @@ function FinanceTracker() {
       });
   };
 
-  const handleSelectBucket = (e, location) => {
+  const handleSelectAccount = (e, location) => {
+    // console.log("accounts",accounts)
     e.preventDefault();
-    console.log("selectedBucket:", location);
-    setSelectedBucket(location);
+    setSelected(location);
+    console.log("Selected Account:", location);
+    if (!compare) {
+      let updated = accounts.map((account) => selectedAccounts[account.id] = false)
+      updated[location] = true;
+      setSelectedAccounts(updated);
+    } else {
+      setSelectedAccounts({
+        ...selectedAccounts,
+        [location]: !selectedAccounts[location],
+      });
+    }
   };
 
-  const processData = (savings, selectedBucket) => {
+  /**
+   * Does operations to process the data into the correct format. Currently this only needs to convert the date
+   * @param {*} savings
+   * @param {*} selectedBucket
+   * @returns
+   */
+  const processData = (savings) => {
+    console.log("Processing account data");
     const array = savings;
     array.forEach(
       (data) => {
@@ -99,48 +141,97 @@ function FinanceTracker() {
             .substring(0, 10);
         } catch (err) {
           // TODO: find out where this error is occuring
-          console.log("ERROR", err);
+          // console.log("ERROR", err);
+          console.log("ERROR", data.date);
         }
       }
       // console.log("Data",new Date(data.date.seconds*1000).toISOString())
     );
-    return array
-      .filter(
-        (entry) => entry.bank === selectedBucket || selectedBucket === "total"
-      )
-      .sort((a, b) => a.date.seconds - b.date.seconds);
+    return array.sort((a, b) => a.date.seconds - b.date.seconds);
   };
+
+  const processedData = useMemo(() => processData(savings), [savings]);
+  // const selectedData = processedData.filter(
+  //   (entry) => entry.bank === selectedBucket
+  // );
+
+  const totalsData = useMemo(() => getTotals(processedData), [processedData]);
+  // combine each account into one object per date
+  // const sortedData = useMemo(() => getTotals(processedData), [processedData]);
+  const sortedData = sortData(processedData);
+
+  const setComparisonMode = () => {
+    // if already in comparison mode, reset the selected accounts
+    if(compare) {
+      accounts.map((account) => selectedAccounts[account.id] = false)
+      setSelectedAccounts({...selectedAccounts,[accounts[0].id]: true})     
+    }
+    setCompare(!compare);
+  }
+
+  console.log("savings",savings)
+
 
   return (
     <>
-      {/* <UserLoginStatus auth={auth} /> */}
+      <UserLoginStatus auth={auth} />
       <UploadCSVToDatabase />
-      <div className="flex">
-        {locations.map((location) => (
-          <div key={location.id}>
-            <button
-              onClick={(e) => handleSelectBucket(e, location.id)}
-              className={`flex hover:bg-red-50 justify-start border-2 px-2 py-1 rounded-md m-1 ${
-                selectedBucket === location.id &&
-                "bg-orange-200 hover:bg-orange-200"
-              }`}
-            >
-              {location.id === "total" ? "Total" : location.data().description}
-            </button>
-          </div>
-        ))}
+      <div>
+        <h1>Net Worth</h1>
+        <TotalsChart data={totalsData}></TotalsChart>
       </div>
-      {[{ id: "total" }, ...locations].map((location) => (
-        <FinanceBucket
-          key={location.id}
-          savings={processData(savings, selectedBucket)}
-          investments={investments}
-          selectedBucket={selectedBucket}
-          bank={location.id}
-        />
-      ))}
+      <AccountPicker
+        accounts={accounts}
+        handleSelectBucket={handleSelectAccount}
+        selectedAccounts={selectedAccounts}
+      />
+      <div className="flex">
+        <button
+          className={`text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1 ${compare && "bg-blue-300 hover:bg-blue-200"}`}
+          onClick={setComparisonMode}
+        >
+          Compare
+        </button>
+        {compare && (
+          <p className="text-gray-200">Multiple accounts can be selected</p>
+        )}
+      </div>
+
+      <AccountHistoryChart
+        accounts={accounts}
+        savings={sortedData}
+        investments={investments}
+        selectedAccounts={selectedAccounts}
+      />
+
+      <table>
+              <thead>
+                <tr>
+                  <th>amount</th>
+                  <th>bank</th>
+                  <th>currency</th>
+                  <th>date</th>
+                  <th>id</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {savings &&
+                  savings.map((entry, i) => (
+                    <tr key={i}>
+                      <td>{entry.amount}</td>
+                      <td>{entry.bank}</td>
+                      <td>{entry.currency}</td>
+                      <td>{entry.date}</td>
+                      <td>{entry.id}</td>
+                      <td><button className="text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 rounded-md m-1">delete</button></td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
     </>
   );
+
 }
 
 export default FinanceTracker;

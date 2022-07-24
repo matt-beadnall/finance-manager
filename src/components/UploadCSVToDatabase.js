@@ -66,7 +66,7 @@ export default function UploadCSVToDatabase() {
     const bucketsRef = db.collection("savings");
     await data.forEach((entry) =>
       bucketsRef.add({
-        amount: entry.amount,
+        amount: Number(entry.amount),
         bank: entry.bank,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         currency: entry.currency,

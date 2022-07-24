@@ -13,7 +13,7 @@ function App() {
   return (
     <div className="App">
       <header>
-        <h1 className="text-3xl m-1 text-orange-400">Finance Tracker</h1>
+        <h1 className="text-3xl m-1 text-slate-400">Finance Tracker</h1>
       </header>
 
       <section>
