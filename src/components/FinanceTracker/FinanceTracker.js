@@ -7,6 +7,7 @@ import {
 
 import AccountHistoryChart from "../Account";
 import { AccountPicker } from "./AccountPicker";
+import Modal from "../../Modal";
 import { TotalsChart } from "../Charts.js";
 import UploadCSVToDatabase from "../UploadCSVToDatabase";
 import { UserLoginStatus } from "../UserLoginStatus";
@@ -22,6 +23,8 @@ function FinanceTracker() {
   const [selectedAccounts, setSelectedAccounts] = useState({});
   const [selected, setSelected] = useState("");
   const [compare, setCompare] = useState(false);
+  const [editVisible, setEditVisible] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState({
     savings: false,
     locations: true,
@@ -87,7 +90,7 @@ function FinanceTracker() {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          docsArray.push(doc.data());
+          docsArray.push(doc);
         });
         switch (docName) {
           case "savings":
@@ -113,7 +116,9 @@ function FinanceTracker() {
     setSelected(location);
     console.log("Selected Account:", location);
     if (!compare) {
-      let updated = accounts.map((account) => selectedAccounts[account.id] = false)
+      let updated = accounts.map(
+        (account) => (selectedAccounts[account.id] = false)
+      );
       updated[location] = true;
       setSelectedAccounts(updated);
     } else {
@@ -132,22 +137,23 @@ function FinanceTracker() {
    */
   const processData = (savings) => {
     console.log("Processing account data");
-    const array = savings;
-    array.forEach(
-      (data) => {
+    savings.forEach(
+      (entry) => {
         try {
-          data.date = new Date(data.date.seconds * 1000)
+          entry.data().date = new Date(entry.data().date.seconds * 1000)
             .toISOString()
             .substring(0, 10);
         } catch (err) {
           // TODO: find out where this error is occuring
           // console.log("ERROR", err);
-          console.log("ERROR", data.date);
+          console.log("ERROR", entry.data().date);
         }
       }
       // console.log("Data",new Date(data.date.seconds*1000).toISOString())
     );
-    return array.sort((a, b) => a.date.seconds - b.date.seconds);
+    return savings
+      .map((entry) => entry.data())
+      .sort((a, b) => a.date.seconds - b.date.seconds);
   };
 
   const processedData = useMemo(() => processData(savings), [savings]);
@@ -162,15 +168,41 @@ function FinanceTracker() {
 
   const setComparisonMode = () => {
     // if already in comparison mode, reset the selected accounts
-    if(compare) {
-      accounts.map((account) => selectedAccounts[account.id] = false)
-      setSelectedAccounts({...selectedAccounts,[accounts[0].id]: true})     
+    if (compare) {
+      accounts.map((account) => (selectedAccounts[account.id] = false));
+      setSelectedAccounts({ ...selectedAccounts, [accounts[0].id]: true });
     }
     setCompare(!compare);
+  };
+
+  /**
+   * For data returned from firebase, map to the correct format (.data())
+   */
+  const extractData = (data) => {
+    return data.map((entry) => entry.data());
+  };
+
+  const handleDelete = (e, record) => {
+    e.preventDefault();
+    if (window.confirm("Delete " + record.id)) {
+      console.log("Deleting", record);
+      db.collection("savings")
+        .doc(record.id)
+        .delete()
+        .then(() => {
+          console.log("Document successfully deleted!");
+          setSavings(savings.filter((entry) => entry.id !== record.id));
+        })
+        .catch(function (error) {
+          console.error("Error removing document: ", error);
+        });
+    }
+  };
+
+  const toggleModal = () => {
+    console.log("Toggling modal");
+    setShowModal(!showModal);
   }
-
-  console.log("savings",savings)
-
 
   return (
     <>
@@ -187,7 +219,9 @@ function FinanceTracker() {
       />
       <div className="flex">
         <button
-          className={`text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1 ${compare && "bg-blue-300 hover:bg-blue-200"}`}
+          className={`text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1 ${
+            compare && "bg-blue-300 hover:bg-blue-200"
+          }`}
           onClick={setComparisonMode}
         >
           Compare
@@ -198,40 +232,63 @@ function FinanceTracker() {
       </div>
 
       <AccountHistoryChart
+        setSavings={setSavings}
         accounts={accounts}
         savings={sortedData}
         investments={investments}
         selectedAccounts={selectedAccounts}
       />
-
-      <table>
-              <thead>
-                <tr>
-                  <th>amount</th>
-                  <th>bank</th>
-                  <th>currency</th>
-                  <th>date</th>
-                  <th>id</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {savings &&
-                  savings.map((entry, i) => (
-                    <tr key={i}>
-                      <td>{entry.amount}</td>
-                      <td>{entry.bank}</td>
-                      <td>{entry.currency}</td>
-                      <td>{entry.date}</td>
-                      <td>{entry.id}</td>
-                      <td><button className="text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 rounded-md m-1">delete</button></td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+      <button
+        className="text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 rounded-md m-1"
+        onClick={toggleModal}
+      >
+        { `${showModal ? 'Close' : 'Open' } Modal` }
+      </button>
+      {showModal && 
+      (<Modal>
+          <button onClick={() => setShowModal(!showModal)}>
+            X
+          </button>
+          <table>
+            <thead>
+              <tr>
+                <th>Amount</th>
+                <th>Bank</th>
+                <th>Currency</th>
+                <th>Date</th>
+                <th>Notes</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {savings &&
+                savings.map((record, i) => (
+                  <tr key={i}>
+                    <td>{record.data().amount}</td>
+                    <td>{record.data().bank}</td>
+                    <td>{record.data().currency}</td>
+                    <td>
+                      {new Date(record.data().date.seconds * 1000)
+                        .toISOString()
+                        .substring(0, 10)}
+                    </td>
+                    <td>{record.data().notes}</td>
+                    <td>
+                      <button
+                        onClick={(e) => handleDelete(e, record)}
+                        className="text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 rounded-md m-1"
+                      >
+                        delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </Modal>
+      )}
     </>
   );
-
 }
 
 export default FinanceTracker;

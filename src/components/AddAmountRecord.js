@@ -2,13 +2,13 @@ import { auth, db, firebase } from "../firebase/firebaseConfig";
 
 import React from "react";
 
-export function AddAmountRecord({ accounts }) {
+export function AddAmountRecord({ accounts, savings, setSavings }) {
   const [visible, setVisible] = React.useState(false);
   
   //form values:
   const [selectedAccount, setSelectedAccount] = React.useState("");
   const [selectedAmount, setSelectedAmount] = React.useState(0);
-  const [notes, setNotes] = React.useState(0);
+  const [notes, setNotes] = React.useState("");
 
   const { uid } = auth.currentUser;
 
@@ -38,7 +38,7 @@ export function AddAmountRecord({ accounts }) {
     // check bank is selected
     // check if amount is a number. Do not submit if not.
     const data = {
-      amount: selectedAmount,
+      amount: Number(selectedAmount),
       bank: selectedAccount,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       currency: "GBP",
@@ -55,7 +55,12 @@ export function AddAmountRecord({ accounts }) {
       setSelectedAccount('');
       setSelectedAmount(0);
       setNotes("");
+      savings.push(data)
+      setSavings(savings)
     }
+    setSelectedAccount('');
+    setSelectedAmount(0);
+    setNotes("");
   }
 
 
@@ -83,7 +88,7 @@ export function AddAmountRecord({ accounts }) {
                 accounts.map((account) => <option value={account.id}>{account.data().description}</option>)
                 }
             </select>
-            <input value={selectedAmount} onChange={handleChangeAmount} />
+            <input placeholder="Amount" onChange={handleChangeAmount} />
             {/* <input type="text" placeholder="Date" /> */}
             <input value={notes} onChange={handleChangeNotes} type="text" placeholder="Notes" />
             <button type="submit" disabled={isFormComplete}>Upload</button>

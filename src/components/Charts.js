@@ -21,7 +21,6 @@ function formatXAxis(tickItem) {
  * Made from recharts @LineChart
  */
 export function StandardChart({ data, selectedAccounts }) {
-  console.log("selectedAccounts", Object.entries(selectedAccounts));
   return (
     <LineChart width={500} height={300} data={data}>
       {/* <XAxis dataKey="date" tickFormatter={formatXAxis} /> */}

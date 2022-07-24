@@ -1,9 +1,17 @@
+import React, { useEffect } from "react";
+
 import { AddAmountRecord } from "./AddAmountRecord";
 import { FinancialCharts } from "../FinancialCharts";
 import Investment from "./Investment";
-import React from "react";
 
-export default function AccountHistoryChart({ accounts, savings, investments, bank, selectedAccounts }) {
+export default function AccountHistoryChart({ accounts, savings, investments, bank, selectedAccounts, setSavings }) {
+
+  const [savingsData,setSavingsData] = React.useState([]);
+  
+  useEffect(() => {
+    setSavingsData(savings);
+  }, [savings]);
+  
   const handleShowTrendLine = (e) => {
     e.preventDefault();
   };
@@ -18,7 +26,7 @@ export default function AccountHistoryChart({ accounts, savings, investments, ba
       >
         <div>
           <FinancialCharts amounts={savings} selectedAccounts={selectedAccounts} />
-          <AddAmountRecord accounts={accounts}/>
+          <AddAmountRecord accounts={accounts} savings={savings} setSavings={setSavingsData}/>
           <button
             onClick={handleShowTrendLine}
             className="bg-white hover:bg-neutral-100 text-gray-500 border-2 py-1 px-2 rounded m-1"
@@ -33,9 +41,9 @@ export default function AccountHistoryChart({ accounts, savings, investments, ba
           </button>
           {investments &&
             investments
-              .filter((entry) => entry.bank === bank)
+              .filter((entry) => entry.data().bank === bank)
               .map((investment, i) => (
-                <Investment key={i} document={investment} />
+                <Investment key={i} document={investment.data()} />
               ))}
         </div>
       </div>

@@ -62,7 +62,6 @@ export default function UploadCSVToDatabase() {
   };
 
   const uploadData = async (data) => {
-    console.log(data);
     const bucketsRef = db.collection("savings");
     await data.forEach((entry) =>
       bucketsRef.add({
@@ -77,12 +76,12 @@ export default function UploadCSVToDatabase() {
   };
 
   return (
-    <div>
+    <div >
       <button className="flex hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1" onClick={() => setIsDisplayed(!isDisplayed)}>
         {isDisplayed ? "X" : "Upload Data"}
       </button>
       {isDisplayed && (
-        <div className="csv-upload">
+        <div className="m-1 p-2 bg-slate-100">
           <label htmlFor="csvInput" style={{ display: "block" }}>
             Enter CSV File
           </label>
@@ -92,7 +91,7 @@ export default function UploadCSVToDatabase() {
             name="file"
             type="File"
           />
-          <button onClick={handleParse} className="csv-parse">
+          <button onClick={handleParse} className="bg-white hover:bg-neutral-100 text-gray-500 border-2 py-1 px-2 rounded m-1">
             Parse
           </button>
           {error && <p className="error">{error}</p>}
