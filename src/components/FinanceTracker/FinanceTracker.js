@@ -7,11 +7,11 @@ import {
 
 import AccountHistoryChart from "../Account";
 import { AccountPicker } from "./AccountPicker";
+import { EditDataTable } from "./EditDataTable";
 import Modal from "../../Modal";
 import { TotalsChart } from "../Charts.js";
 import UploadCSVToDatabase from "../UploadCSVToDatabase";
 import { UserLoginStatus } from "../UserLoginStatus";
-import { data } from "autoprefixer";
 
 function FinanceTracker() {
   // const savingsRef = db.collection("savings");
@@ -21,10 +21,11 @@ function FinanceTracker() {
   const [investments, setInvestments] = useState([]);
   const [savings, setSavings] = useState([]);
   const [selectedAccounts, setSelectedAccounts] = useState({});
+  // eslint-disable-next-line
   const [selected, setSelected] = useState("");
   const [compare, setCompare] = useState(false);
-  const [editVisible, setEditVisible] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  // eslint-disable-next-line
   const [loading, setLoading] = useState({
     savings: false,
     locations: true,
@@ -32,21 +33,21 @@ function FinanceTracker() {
   });
 
   // current user information
-  const { uid, photoURL } = auth.currentUser;
+  const { uid } = auth.currentUser;
 
   useEffect(() => {
     getAllCashLocations(uid, db);
     fetchAllDocuments("investments", uid);
     fetchAllDocuments("savings", uid);
     setLoading({ locations: false, investments: false });
+    // eslint-disable-next-line
   }, []);
 
   /**
    * Add caching to this! React hooks
    */
   const getAllCashLocations = async (uid, db) => {
-    const locationsRef = db.collection("locations")
-      .where("uid", "==", uid);
+    const locationsRef = db.collection("locations").where("uid", "==", uid);
     let locationsArray = [];
     locationsRef
       .get()
@@ -200,11 +201,6 @@ function FinanceTracker() {
     }
   };
 
-  const toggleModal = () => {
-    console.log("Toggling modal");
-    setShowModal(!showModal);
-  }
-
   return (
     <>
       <UserLoginStatus auth={auth} />
@@ -220,8 +216,9 @@ function FinanceTracker() {
       />
       <div className="flex">
         <button
-          className={`text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1 ${compare && "bg-blue-300 hover:bg-blue-200"
-            }`}
+          className={`text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1 ${
+            compare && "bg-blue-300 hover:bg-blue-200"
+          }`}
           onClick={setComparisonMode}
         >
           Compare
@@ -238,61 +235,13 @@ function FinanceTracker() {
         investments={investments}
         selectedAccounts={selectedAccounts}
       />
-      <button
-        className="text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 rounded-md m-1"
-        onClick={toggleModal}
-      >
-        {`${showModal ? 'Close' : 'Open'} Modal`}
-      </button>
-      {showModal &&
-        (<Modal>
-          <div className="h-2">
-            <button onClick={() => setShowModal(!showModal)}>
-              X
-            </button>
-            <div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Amount</th>
-                    <th>Bank</th>
-                    <th>Currency</th>
-                    <th>Date</th>
-                    <th>Notes</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {savings &&
-                    savings.map((record, i) => (
-                      <tr key={i}>
-                        <td>{record.data().amount}</td>
-                        <td>{record.data().bank}</td>
-                        <td>{record.data().currency}</td>
-                        <td>
-                          {new Date(record.data().date.seconds * 1000)
-                            .toISOString()
-                            .substring(0, 10)}
-                        </td>
-                        <td>{record.data().notes}</td>
-                        <td>
-                          <button
-                            onClick={(e) => handleDelete(e, record)}
-                            className="text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 rounded-md m-1"
-                          >
-                            delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </Modal>
-        )}
+      <Modal title="Edit Data">
+        <EditDataTable savings={savings} handleDelete={handleDelete} />
+      </Modal>
     </>
   );
 }
 
 export default FinanceTracker;
+
+

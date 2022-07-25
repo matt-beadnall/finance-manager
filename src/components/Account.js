@@ -1,16 +1,12 @@
-import React, { useEffect } from "react";
-
 import { AddAmountRecord } from "./AddAmountRecord";
 import { FinancialCharts } from "../FinancialCharts";
 import Investment from "./Investment";
+import React from "react";
 
 export default function AccountHistoryChart({ accounts, savings, investments, bank, selectedAccounts, setSavings }) {
 
+  // eslint-disable-next-line
   const [savingsData,setSavingsData] = React.useState([]);
-  
-  useEffect(() => {
-    setSavingsData(savings);
-  }, [savings]);
   
   const handleShowTrendLine = (e) => {
     e.preventDefault();

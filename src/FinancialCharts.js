@@ -21,9 +21,9 @@ export function FinancialCharts({ amounts, selectedAccounts }) {
     </div>
   );
 
-  function getCurrentAccountValue() {
-    if (amounts.length) {
-      return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(amounts[amounts.length - 1].amount);
-    } 
-  }
+  // function getCurrentAccountValue() {
+  //   if (amounts.length) {
+  //     return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(amounts[amounts.length - 1].amount);
+  //   } 
+  // }
 }
