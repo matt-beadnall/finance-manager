@@ -35,17 +35,18 @@ function FinanceTracker() {
   const { uid, photoURL } = auth.currentUser;
 
   useEffect(() => {
-    getAllCashLocations();
-    fetchAllDocuments("investments", auth.currentUser.uid);
-    fetchAllDocuments("savings");
+    getAllCashLocations(uid, db);
+    fetchAllDocuments("investments", uid);
+    fetchAllDocuments("savings", uid);
     setLoading({ locations: false, investments: false });
   }, []);
 
   /**
    * Add caching to this! React hooks
    */
-  const getAllCashLocations = async () => {
-    const locationsRef = db.collection("locations");
+  const getAllCashLocations = async (uid, db) => {
+    const locationsRef = db.collection("locations")
+      .where("uid", "==", uid);
     let locationsArray = [];
     locationsRef
       .get()
@@ -82,7 +83,7 @@ function FinanceTracker() {
   const fetchAllDocuments = (docName, uid) => {
     const docsRef = db
       .collection(docName)
-      // .where("uid","==",uid)
+      .where("uid", "==", uid)
       .orderBy("date")
       .limit(200);
     let docsArray = [];
@@ -219,9 +220,8 @@ function FinanceTracker() {
       />
       <div className="flex">
         <button
-          className={`text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1 ${
-            compare && "bg-blue-300 hover:bg-blue-200"
-          }`}
+          className={`text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1 ${compare && "bg-blue-300 hover:bg-blue-200"
+            }`}
           onClick={setComparisonMode}
         >
           Compare
@@ -242,51 +242,55 @@ function FinanceTracker() {
         className="text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 rounded-md m-1"
         onClick={toggleModal}
       >
-        { `${showModal ? 'Close' : 'Open' } Modal` }
+        {`${showModal ? 'Close' : 'Open'} Modal`}
       </button>
-      {showModal && 
-      (<Modal>
-          <button onClick={() => setShowModal(!showModal)}>
-            X
-          </button>
-          <table>
-            <thead>
-              <tr>
-                <th>Amount</th>
-                <th>Bank</th>
-                <th>Currency</th>
-                <th>Date</th>
-                <th>Notes</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {savings &&
-                savings.map((record, i) => (
-                  <tr key={i}>
-                    <td>{record.data().amount}</td>
-                    <td>{record.data().bank}</td>
-                    <td>{record.data().currency}</td>
-                    <td>
-                      {new Date(record.data().date.seconds * 1000)
-                        .toISOString()
-                        .substring(0, 10)}
-                    </td>
-                    <td>{record.data().notes}</td>
-                    <td>
-                      <button
-                        onClick={(e) => handleDelete(e, record)}
-                        className="text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 rounded-md m-1"
-                      >
-                        delete
-                      </button>
-                    </td>
+      {showModal &&
+        (<Modal>
+          <div className="h-2">
+            <button onClick={() => setShowModal(!showModal)}>
+              X
+            </button>
+            <div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Amount</th>
+                    <th>Bank</th>
+                    <th>Currency</th>
+                    <th>Date</th>
+                    <th>Notes</th>
+                    <th></th>
                   </tr>
-                ))}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {savings &&
+                    savings.map((record, i) => (
+                      <tr key={i}>
+                        <td>{record.data().amount}</td>
+                        <td>{record.data().bank}</td>
+                        <td>{record.data().currency}</td>
+                        <td>
+                          {new Date(record.data().date.seconds * 1000)
+                            .toISOString()
+                            .substring(0, 10)}
+                        </td>
+                        <td>{record.data().notes}</td>
+                        <td>
+                          <button
+                            onClick={(e) => handleDelete(e, record)}
+                            className="text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 rounded-md m-1"
+                          >
+                            delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </Modal>
-      )}
+        )}
     </>
   );
 }

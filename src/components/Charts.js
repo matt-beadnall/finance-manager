@@ -27,8 +27,8 @@ export function StandardChart({ data, selectedAccounts }) {
       <XAxis dataKey="date" tickFormatter={formatXAxis} />
       <YAxis />
       <CartesianGrid stroke="#eee" />
-      {Object.entries(selectedAccounts).map((account) => 
-        account[1] && <Line type="monotone" dataKey={account[0]} stroke="#8884d8" />
+      {Object.entries(selectedAccounts).map((account,i) => 
+        <Line key={i} style={{ display: account[1] ? "block" : "none" }}  type="monotone" dataKey={account[0]} stroke="#8884d8" />
       )}
       <Tooltip />
     </LineChart>
