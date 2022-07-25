@@ -10,7 +10,7 @@ import React from "react";
 export function SignIn() {
   const signInWithGoogle = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithCredential(provider);
+    auth.signInWithPopup(provider);
   };
 
   return (
