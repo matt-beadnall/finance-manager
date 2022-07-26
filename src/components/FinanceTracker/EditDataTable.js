@@ -2,9 +2,7 @@ import React from "react";
 
 export function EditDataTable({ savings, handleDelete }) {
   return (
-    <div>
-      <div>
-        <table>
+        <table className="table-auto">
           <thead>
             <tr>
               <th>Amount</th>
@@ -40,7 +38,5 @@ export function EditDataTable({ savings, handleDelete }) {
               ))}
           </tbody>
         </table>
-      </div>
-    </div>
   );
 }
