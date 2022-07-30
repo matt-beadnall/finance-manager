@@ -16,7 +16,7 @@ export default function Modal({ children, title }) {
         aria-labelledby="exampleModalScrollableLabel"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-dialog-scrollable relative w-auto pointer-events-none">
+        <div className="modal-dialog modal-lg modal-dialog-scrollable relative w-auto pointer-events-none">
           <div className="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
             <div className="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
               <h5
@@ -38,7 +38,7 @@ export default function Modal({ children, title }) {
             <div className="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
               <button
                 type="button"
-                className="inline-block px-6 py-2.5 bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out"
+                className="inline-block px-6 py-2.5 bg-purple-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out"
                 data-bs-dismiss="modal"
               >
                 Close

@@ -1,17 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { auth, db } from "../../firebase/firebaseConfig.js";
-import {
-  getTotals,
-  sortData,
-} from "../../functions/DataCalculations/DataCalculations";
+import { getTotals } from "../../functions/data-processing/DataCalculations";
 
-import AccountHistoryChart from "../Account";
-import { AccountPicker } from "./AccountPicker";
-import { EditDataTable } from "./EditDataTable";
+import Account from "../Account";
+import { AccountPicker } from "../AccountPicker/AccountPicker";
+import { EditDataTable } from "../EditDataTable/EditDataTable";
 import Modal from "../../Modal";
-import { TotalsChart } from "../Charts.js";
-import UploadCSVToDatabase from "../UploadCSVToDatabase";
+import { TotalsChart } from "../Charts/Charts.js";
+import UploadCSVToDatabase from "../UploadCSVToDatabase/UploadCSVToDatabase";
 import { UserLoginStatus } from "../UserLoginStatus";
+import { getLastInArray } from "../../functions/arrays/ProcessArray.js";
 
 function FinanceTracker() {
   // const savingsRef = db.collection("savings");
@@ -33,7 +31,7 @@ function FinanceTracker() {
   });
 
   // current user information
-  const { uid } = auth.currentUser;
+  const { uid, photoURL } = auth.currentUser;
 
   useEffect(() => {
     getAllCashLocations(uid, db);
@@ -139,34 +137,34 @@ function FinanceTracker() {
    */
   const processData = (savings) => {
     console.log("Processing account data");
-    savings.forEach(
+    const newArray = savings
+      .map((entry) => (
+        entry.data()
+      ))
+      .sort((a, b) => a.date.seconds - b.date.seconds);
+    console.log("newArray", newArray)
+    newArray.forEach(
       (entry) => {
         try {
-          entry.data().date = new Date(entry.data().date.seconds * 1000)
+          entry.date = new Date(entry.date.seconds * 1000)
             .toISOString()
             .substring(0, 10);
         } catch (err) {
           // TODO: find out where this error is occuring
           // console.log("ERROR", err);
-          console.log("ERROR", entry.data().date);
+          console.log("ERROR", entry.date);
         }
       }
-      // console.log("Data",new Date(data.date.seconds*1000).toISOString())
     );
-    return savings
-      .map((entry) => entry.data())
-      .sort((a, b) => a.date.seconds - b.date.seconds);
+    return newArray
   };
 
+  // preprocess data for charts
   const processedData = useMemo(() => processData(savings), [savings]);
-  // const selectedData = processedData.filter(
-  //   (entry) => entry.bank === selectedBucket
-  // );
 
+  // Create data for the totals chart
   const totalsData = useMemo(() => getTotals(processedData), [processedData]);
-  // combine each account into one object per date
-  // const sortedData = useMemo(() => getTotals(processedData), [processedData]);
-  const sortedData = sortData(processedData);
+  console.log("totalsData",totalsData)
 
   const setComparisonMode = () => {
     // if already in comparison mode, reset the selected accounts
@@ -207,6 +205,7 @@ function FinanceTracker() {
       <UploadCSVToDatabase />
       <div>
         <h1>Net Worth</h1>
+        <h1>{`Value: ${getLastInArray()}`}</h1>
         <TotalsChart data={totalsData}></TotalsChart>
       </div>
       <AccountPicker
@@ -216,9 +215,8 @@ function FinanceTracker() {
       />
       <div className="flex">
         <button
-          className={`text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1 ${
-            compare && "bg-blue-300 hover:bg-blue-200"
-          }`}
+          className={`text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1 ${compare && "bg-blue-300 hover:bg-blue-200"
+            }`}
           onClick={setComparisonMode}
         >
           Compare
@@ -228,15 +226,15 @@ function FinanceTracker() {
         )}
       </div>
 
-      <AccountHistoryChart
+      <Account
         setSavings={setSavings}
         accounts={accounts}
-        savings={sortedData}
+        data={processedData}
         investments={investments}
         selectedAccounts={selectedAccounts}
       />
       <Modal title="Edit Data">
-        <EditDataTable savings={savings} handleDelete={handleDelete} />
+        <EditDataTable savings={savings} handleDelete={handleDelete}/>
       </Modal>
     </>
   );

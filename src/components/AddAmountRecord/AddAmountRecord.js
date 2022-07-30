@@ -1,4 +1,4 @@
-import { auth, db, firebase } from "../firebase/firebaseConfig";
+import { auth, db, firebase } from "../../firebase/firebaseConfig";
 
 import React from "react";
 
@@ -10,7 +10,7 @@ export function AddAmountRecord({ accounts, savings, setSavings }) {
   const [selectedAmount, setSelectedAmount] = React.useState(0);
   const [notes, setNotes] = React.useState("");
 
-  const { uid } = auth.currentUser;
+  const { uid, photoURL } = auth.currentUser;
 
   const savingsRef = db.collection('savings');
 
@@ -82,8 +82,8 @@ export function AddAmountRecord({ accounts, savings, setSavings }) {
       {
         <div style={{ display: visible ? "block" : "none" }}>
           <form onSubmit={uploadData}>
-            <select onChange={handleSelectChange} name="account">
-            <option disabled selected value> -- select an account -- </option>
+            <select defaultValue={'DEFAULT'} onChange={handleSelectChange} name="account">
+            <option disabled value="DEFAULT"> -- select an account -- </option>
               {accounts &&
                 accounts.map((account) => <option value={account.id}>{account.data().description}</option>)
                 }
@@ -91,7 +91,7 @@ export function AddAmountRecord({ accounts, savings, setSavings }) {
             <input placeholder="Amount" onChange={handleChangeAmount} />
             {/* <input type="text" placeholder="Date" /> */}
             <input value={notes} onChange={handleChangeNotes} type="text" placeholder="Notes" />
-            <button type="submit" disabled={isFormComplete}>Upload</button>
+            <button type="submit">Upload</button>
           </form>
         </div>
       }

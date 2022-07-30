@@ -1,13 +1,18 @@
-import { AddAmountRecord } from "./AddAmountRecord";
-import { FinancialCharts } from "../FinancialCharts";
-import Investment from "./Investment";
-import React from "react";
+import { AddAmountRecord } from "../AddAmountRecord/AddAmountRecord";
+import Investment from "../Investment";
+import React, { useMemo } from "react";
+import { sortData } from "../../functions/data-processing/DataCalculations";
+import { StandardChart } from "../Charts/Charts";
 
-export default function AccountHistoryChart({ accounts, savings, investments, bank, selectedAccounts, setSavings }) {
+export default function Account({ setSavings, accounts, data, investments, bank, selectedAccounts }) {
+
+
+  // combine each account into one object per date
+  const sortedData = useMemo(() => sortData(data), [data]);
 
   // eslint-disable-next-line
-  const [savingsData,setSavingsData] = React.useState([]);
-  
+  const [savingsData, setSavingsData] = React.useState([]);
+
   const handleShowTrendLine = (e) => {
     e.preventDefault();
   };
@@ -18,11 +23,11 @@ export default function AccountHistoryChart({ accounts, savings, investments, ba
   return (
     <>
       <div
-        // style={{ display: bank === selectedBucket ? "block" : "none" }}
+      // style={{ display: bank === selectedBucket ? "block" : "none" }}
       >
         <div>
-          <FinancialCharts amounts={savings} selectedAccounts={selectedAccounts} />
-          <AddAmountRecord accounts={accounts} savings={savings} setSavings={setSavingsData}/>
+          <StandardChart data={sortedData} selectedAccounts={selectedAccounts} />
+          <AddAmountRecord accounts={accounts} savings={sortedData} setSavings={setSavingsData} />
           <button
             onClick={handleShowTrendLine}
             className="bg-white hover:bg-neutral-100 text-gray-500 border-2 py-1 px-2 rounded m-1"

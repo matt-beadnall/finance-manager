@@ -1,8 +1,8 @@
 import React from "react";
-import { SignOut } from "../Authentication.js";
+import { SignOut } from "./Authentication/Authentication.js";
 
 export function UserLoginStatus({ auth }) {
-  const { uid, photoURL, displayName } = auth.currentUser;
+  const { photoURL, displayName } = auth.currentUser;
   
   return (
     <div className="flex bg-slate-100 p-3">

@@ -22,7 +22,6 @@ function formatXAxis(tickItem) {
 export function StandardChart({ data, selectedAccounts }) {
   return (
     <LineChart width={500} height={300} data={data}>
-      {/* <XAxis dataKey="date" tickFormatter={formatXAxis} /> */}
       <XAxis dataKey="date" tickFormatter={formatXAxis} />
       <YAxis />
       <CartesianGrid stroke="#eee" />
@@ -40,8 +39,7 @@ export function StandardChart({ data, selectedAccounts }) {
 export function TotalsChart({ data }) {
   return (
     <LineChart margin={0} width={800} height={200} data={data}>
-      {/* <XAxis dataKey="date" tickFormatter={formatXAxis} /> */}
-      <XAxis padding={0} tickMargin="0" tick={false} />
+      <XAxis dataKey="date" padding={0} tickFormatter={formatXAxis} tickMargin="0" tick={false} />
       <YAxis tick={false} domain={["dataMin", "domainMax"]} />
       <CartesianGrid stroke="#fff" />
       <Line dataKey="amount" stroke="#82ca9d" />

@@ -1,6 +1,6 @@
-import { auth, firebase } from "./firebase/firebaseConfig.js";
+import { auth, firebase } from "../../firebase/firebaseConfig.js";
 
-import GoogleIcon from "./images/google-svgrepo-com.svg";
+import GoogleIcon from "../../images/google-svgrepo-com.svg";
 import React from "react";
 
 /**

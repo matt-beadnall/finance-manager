@@ -10,11 +10,12 @@ let firebaseConfig = {
     projectId: "finance-manager-baf55",
     storageBucket: "finance-manager-baf55.appspot.com",
     messagingSenderId: "977205835382",
-    appId: "1:977205835382:web:a9b78ad9671e2983409157",
+    appId: "1:977205835382:web:a9b78ad9671e2983409157"
 };
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
+    // firebase.firestore().enablePersistence();
 const db = firebase.firestore();
 
 const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
