@@ -24,7 +24,7 @@ export function StandardChart({ data, selectedAccounts }) {
     <LineChart width={500} height={300} data={data}>
       <XAxis dataKey="date" tickFormatter={formatXAxis} />
       <YAxis />
-      <CartesianGrid stroke="#eee" />
+      <CartesianGrid stroke="#eee" fill='white' />
       {Object.entries(selectedAccounts).map((account,i) => 
         <Line key={i} style={{ display: account[1] ? "block" : "none" }}  type="monotone" dataKey={account[0]} stroke="#8884d8" />
       )}
@@ -41,7 +41,7 @@ export function TotalsChart({ data }) {
     <LineChart margin={0} width={800} height={200} data={data}>
       <XAxis dataKey="date" padding={0} tickFormatter={formatXAxis} tickMargin="0" tick={false} />
       <YAxis tick={false} domain={["dataMin", "domainMax"]} />
-      <CartesianGrid stroke="#fff" />
+      <CartesianGrid stroke="#fff" fill='white'/>
       <Line dataKey="amount" stroke="#82ca9d" />
       <Tooltip />
     </LineChart>

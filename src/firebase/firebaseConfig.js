@@ -14,9 +14,14 @@ let firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
+var db = firebase.firestore();
+if (window.location.hostname === "localhost") {
+    console.log("hello" )
+    db.useEmulator("localhost", 8080);
+}
+
 const auth = firebase.auth();
-    // firebase.firestore().enablePersistence();
-const db = firebase.firestore();
+// firebase.firestore().enablePersistence();
 
 const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
 const emailAuthProvider = new firebase.auth.EmailAuthProvider();

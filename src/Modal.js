@@ -16,7 +16,7 @@ export default function Modal({ children, title }) {
         aria-labelledby="exampleModalScrollableLabel"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-lg modal-dialog-scrollable relative w-auto pointer-events-none">
+        <div className="modal-dialog modal-xl modal-dialog-scrollable relative w-auto pointer-events-none">
           <div className="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
             <div className="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
               <h5

@@ -164,7 +164,6 @@ function FinanceTracker() {
 
   // Create data for the totals chart
   const totalsData = useMemo(() => getTotals(processedData), [processedData]);
-  console.log("totalsData",totalsData)
 
   const setComparisonMode = () => {
     // if already in comparison mode, reset the selected accounts

@@ -1,0 +1,11 @@
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (file:/Users/matthewbe/.cache/firebase/emulators/firebase-database-emulator-v4.8.0.jar) to field sun.nio.ch.SelectorImpl.selectedKeys
+WARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+18:41:34.053 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+18:41:34.290 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
+18:41:35.665 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - fake-server successfully activated FBKV (SurveyIdle(0)) wait: 205ms, init: 0ms
+18:41:48.622 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - finance-manager-baf55-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 2ms, init: 0ms
+18:41:48.715 [NamespaceSystem-blocking-namespace-operation-dispatcher-9:finance-manager-baf55-default-rtdb$-395498761:] INFO com.firebase.core.namespace.StateManager - Namespace finance-manager-baf55-default-rtdb status Active to Active
+18:42:53.511 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - finance-manager-baf55 successfully activated FBKV (SurveyIdle(0)) wait: 2ms, init: 0ms
