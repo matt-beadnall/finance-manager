@@ -10,6 +10,7 @@ import { TotalsChart } from "../Charts/Charts.js";
 import UploadCSVToDatabase from "../UploadCSVToDatabase/UploadCSVToDatabase";
 import { UserLoginStatus } from "../UserLoginStatus";
 import { getLastInArray } from "../../functions/arrays/ProcessArray.js";
+import { useFormik } from 'formik';
 
 function FinanceTracker() {
   // const savingsRef = db.collection("savings");
@@ -198,6 +199,15 @@ function FinanceTracker() {
     }
   };
 
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+    },
+    onSubmit: values => {
+      alert(JSON.stringify(values, null, 2));
+    },
+  });
+
   return (
     <>
       <UserLoginStatus auth={auth} />
@@ -232,8 +242,24 @@ function FinanceTracker() {
         investments={investments}
         selectedAccounts={selectedAccounts}
       />
-      <Modal title="Edit Data">
-        <EditDataTable savings={savings} handleDelete={handleDelete}/>
+      <Modal title="Edit Data" size="xl" index={0}>
+        <EditDataTable savings={savings} handleDelete={handleDelete} />
+      </Modal>
+      <Modal title="Add Data" size="lg" index={1}>
+        <div>
+          <form onSubmit={formik.handleSubmit}>
+            <label htmlFor="email">Email Address</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              onChange={formik.handleChange}
+              value={formik.values.email}
+            />
+
+            <button type="submit">Submit</button>
+          </form>
+        </div>
       </Modal>
     </>
   );

@@ -1,27 +1,27 @@
-export default function Modal({ children, title }) {
+export default function Modal({ children, title, size, index }) {
   return (
     <>
       <button
         type="button"
         className="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
         data-bs-toggle="modal"
-        data-bs-target="#exampleModalScrollable"
+        data-bs-target={`#exampleModalScrollable${index}`}
       >
-        {`EDIT DATA`}
+        {title}
       </button>
       <div
         className="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
-        id="exampleModalScrollable"
+        id={`exampleModalScrollable${index}`}
         tabIndex="-1"
-        aria-labelledby="exampleModalScrollableLabel"
+        aria-labelledby={`exampleModalScrollableLabel${index}`}
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-xl modal-dialog-scrollable relative w-auto pointer-events-none">
+        <div className={`modal-dialog modal-${size} modal-dialog-scrollable relative w-auto pointer-events-none`}>
           <div className="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
             <div className="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
               <h5
                 className="text-xl font-medium leading-normal text-gray-800"
-                id="exampleModalScrollableLabel"
+                id={`exampleModalScrollableLabel${index}`}
               >
                 {title}
               </h5>
@@ -56,3 +56,4 @@ export default function Modal({ children, title }) {
     </>
   );
 }
+  
