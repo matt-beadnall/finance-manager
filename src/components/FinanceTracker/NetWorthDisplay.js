@@ -10,7 +10,7 @@ export function NetWorthDisplay({ totalsData }) {
 });
 
   return (<div>
-    <h1>{`New Worth: ${locale.format(getLastInArray(totalsData).amount)}`}</h1>
+    {/* <h1>{`New Worth: ${totalsData ? locale.format(getLastInArray(totalsData).amount) : null}`}</h1> */}
     <TotalsChart data={totalsData}></TotalsChart>
   </div>);
 }

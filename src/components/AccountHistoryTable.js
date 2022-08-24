@@ -59,8 +59,8 @@ export function AccountHistoryTable({ index, selectedBank, savings, handleDelete
 function getTableRows(savings, selectedBank, handleDelete) {
   return savings &&
     savings
-      .reverse()
       .filter((record) => record.data().bank === selectedBank)
+      .sort((a,b) => b.data().date - a.data().date)
       .map((record, i) => (
         <tr
           key={i}

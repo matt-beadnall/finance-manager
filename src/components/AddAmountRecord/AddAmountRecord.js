@@ -7,6 +7,7 @@ export function AddAmountRecord({ accounts, savings, setSavings }) {
   //form values:
   const [selectedAccount, setSelectedAccount] = React.useState("");
   const [selectedAmount, setSelectedAmount] = React.useState(0);
+  const [selectedDate, setSelectedDate] = React.useState(0);
   const [notes, setNotes] = React.useState("");
 
   const { uid } = auth.currentUser;
@@ -28,6 +29,13 @@ export function AddAmountRecord({ accounts, savings, setSavings }) {
 
   };
 
+  const handleChangeDate = (e) => {
+    e.preventDefault();
+    console.log("date", e.target.value)
+    setSelectedDate(e.target.value);
+
+  };
+
   const handleChangeNotes = (e) => {
     e.preventDefault();
     setNotes(e.target.value);
@@ -41,7 +49,7 @@ export function AddAmountRecord({ accounts, savings, setSavings }) {
       bank: selectedAccount,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       currency: "GBP",
-      date: firebase.firestore.FieldValue.serverTimestamp(),
+      date: new Date(selectedDate),
       uid,
       notes: notes
     }
@@ -62,13 +70,6 @@ export function AddAmountRecord({ accounts, savings, setSavings }) {
     setNotes("");
   }
 
-
-  /**
-   * TODO: complete this
-   */
-  const isFormComplete = () => {
-    return true;
-  }
   
   return (
     <>
@@ -78,10 +79,11 @@ export function AddAmountRecord({ accounts, savings, setSavings }) {
             <select defaultValue={'DEFAULT'} onChange={handleSelectChange} name="account">
             <option disabled value="DEFAULT"> -- select an account -- </option>
               {accounts &&
-                accounts.map((account) => <option key={account.code} value={account.code}>{account.description}</option>)
+                accounts.map((account) => <option key={account.code} value={account.code}>{account.company} {account.type}</option>)
                 }
             </select>
             <input placeholder="Amount" onChange={handleChangeAmount} />
+            <input placeholder="Date" type="date" onChange={handleChangeDate} />
             {/* <input type="text" placeholder="Date" /> */}
             <input value={notes} onChange={handleChangeNotes} type="text" placeholder="Notes" />
             <button type="submit">Upload</button>

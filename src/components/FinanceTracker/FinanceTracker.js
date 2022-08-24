@@ -15,9 +15,6 @@ import { getTotals } from "../../functions/data-processing/DataCalculations";
 import { useFormik } from "formik";
 
 function FinanceTracker() {
-  // const savingsRef = db.collection("savings");
-  // const query = savingsRef.orderBy("date").limit(200);
-  // const [savings] = useCollectionData(query, { idField: "id" });
   const [accounts, setAccounts] = useState([]);
   const [investments, setInvestments] = useState([]);
   const [savings, setSavings] = useState([]);
@@ -28,7 +25,7 @@ function FinanceTracker() {
   // eslint-disable-next-line
   const [loading, setLoading] = useState({
     savings: false,
-    locations: true,
+    accounts: true,
     investments: true,
   });
 
@@ -36,37 +33,38 @@ function FinanceTracker() {
   const { uid, photoURL } = auth.currentUser;
 
   useEffect(() => {
-    getAllCashLocations(uid, db);
+    loadAllAccounts(uid, db);
     fetchAllDocumentsForUser("investments", uid);
     fetchAllDocumentsForUser("savings", uid);
-    setLoading({ locations: false, investments: false });
+    setLoading({ accounts: false, investments: false });
     // eslint-disable-next-line
   }, []);
 
   /**
    * Add caching to this! React hooks
    */
-  const getAllCashLocations = async (uid, db) => {
-    const locationsRef = db.collection("locations").where("uid", "==", uid);
+  const loadAllAccounts = async (uid, db) => {
+    const locationsRef = db.collection("accounts").where("uid", "==", uid);
     let locationsArray = [];
     locationsRef
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           locationsArray.push(doc.data());
+          console.log(`${doc.data()} loaded`)
           let updateValue = selectedAccounts;
           updateValue[doc.data().code] = false;
           setSelectedAccounts(updateValue);
         });
         setAccounts(locationsArray);
         setSelected(locationsArray[0].code);
-        if (selectedAccounts !== undefined) {
+        if (selectedAccounts !== undefined && locationsArray[0] !== undefined) {
           setSelectedAccounts({
             ...selectedAccounts,
             [locationsArray[0].code]: true,
           });
         }
-        setLoading({ locations: false });
+        setLoading({ accounts: false });
       })
       .catch((err) => {
         console.log("Error getting documents", err);
@@ -170,16 +168,9 @@ function FinanceTracker() {
     setCompare(!compare);
   };
 
-  /**
-   * For data returned from firebase, map to the correct format (.data())
-   */
-  const extractData = (data) => {
-    return data.map((entry) => entry.data());
-  };
-
   const handleDelete = (e, record) => {
     e.preventDefault();
-    if (window.confirm("Delete " + record.id)) {
+    if (window.confirm(`Delete record with amount ${record.data().amount}?`)) {
       console.log("Deleting", record);
       db.collection("savings")
         .doc(record.id)
@@ -209,6 +200,7 @@ function FinanceTracker() {
 
       <NetWorthDisplay totalsData={totalsData} />
       <BankSelector
+        accounts={accounts}
         savings={savings}
         selected={selected}
         handleSelectBucket={handleSelectAccount}

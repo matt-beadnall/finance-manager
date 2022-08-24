@@ -69,6 +69,7 @@ export default function UploadCSVToDatabase() {
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         currency: entry.currency,
         date: new Date(entry.date),
+        visible: true,
         uid: auth.currentUser.uid
       })
     );
@@ -88,7 +89,7 @@ export default function UploadCSVToDatabase() {
             type="File"
           />
           <button onClick={handleParse} className="bg-white hover:bg-neutral-100 text-gray-500 border-2 py-1 px-2 rounded m-1">
-            Parse
+            Upload
           </button>
           {error && <p className="error">{error}</p>}
         </>
