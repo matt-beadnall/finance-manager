@@ -1,15 +1,18 @@
 import React from "react";
 
-export function AccountPicker({ accounts, e, handleSelectBucket, selectedAccounts }) {
+export function AccountPicker({ savings, selected, handleSelectBucket, selectedAccounts }) {
+
+  let uniqueBanks = [...new Set(savings.map(entry => entry.data().bank))];
+
   return (
     <div className="flex">
-      {accounts.map((account) => (
-        <div key={account.id}>
+      {uniqueBanks.sort().map((bank) => (
+        <div key={bank}>
           <button
-            onClick={(e) => handleSelectBucket(e, account.id)}
-            className={`flex text-gray-500 hover:bg-neutral-200 justify-start border-slate-300 border-2 px-2 py-1 rounded-md m-1 ${selectedAccounts[account.id] && "bg-blue-200 hover:bg-blue-200"}`}
+            onClick={(e) => handleSelectBucket(e, bank)}
+            className={`flex text-gray-500 hover:bg-neutral-200 justify-start border-slate-300 border-2 px-2 py-1 rounded-md m-1 ${selectedAccounts[bank] && "bg-blue-200 hover:bg-blue-200"}`}
           >
-            {account.id === "total" ? "Total" : account.data().description}
+            {bank}
           </button>
         </div>
       ))}

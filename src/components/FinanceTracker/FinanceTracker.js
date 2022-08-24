@@ -1,16 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { auth, db } from "../../firebase/firebaseConfig.js";
-import { getTotals } from "../../functions/data-processing/DataCalculations";
 
-import Account from "../Account";
-import { AccountPicker } from "../AccountPicker/AccountPicker";
-import { EditDataTable } from "../EditDataTable/EditDataTable";
+import AccountHistoryBox from "../Account";
+import { AccountHistoryTable } from "../AccountHistoryTable.js";
+import { AddAmountRecord } from "../AddAmountRecord/AddAmountRecord.js";
+import { AccountPicker as BankSelector } from "../AccountPicker/AccountPicker";
+import { CompareBanks } from "../CompareBanks";
 import Modal from "../../Modal";
-import { TotalsChart } from "../Charts/Charts.js";
+import { NetWorthDisplay } from "./NetWorthDisplay";
 import UploadCSVToDatabase from "../UploadCSVToDatabase/UploadCSVToDatabase";
 import { UserLoginStatus } from "../UserLoginStatus";
 import { getLastInArray } from "../../functions/arrays/ProcessArray.js";
-import { useFormik } from 'formik';
+import { getTotals } from "../../functions/data-processing/DataCalculations";
+import { useFormik } from "formik";
 
 function FinanceTracker() {
   // const savingsRef = db.collection("savings");
@@ -23,7 +25,6 @@ function FinanceTracker() {
   // eslint-disable-next-line
   const [selected, setSelected] = useState("");
   const [compare, setCompare] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   // eslint-disable-next-line
   const [loading, setLoading] = useState({
     savings: false,
@@ -36,8 +37,8 @@ function FinanceTracker() {
 
   useEffect(() => {
     getAllCashLocations(uid, db);
-    fetchAllDocuments("investments", uid);
-    fetchAllDocuments("savings", uid);
+    fetchAllDocumentsForUser("investments", uid);
+    fetchAllDocumentsForUser("savings", uid);
     setLoading({ locations: false, investments: false });
     // eslint-disable-next-line
   }, []);
@@ -52,19 +53,17 @@ function FinanceTracker() {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          locationsArray.push(doc);
-          if (doc.id !== undefined) {
-            let updateValue = selectedAccounts;
-            updateValue[doc.id] = false;
-            setSelectedAccounts(updateValue);
-          }
+          locationsArray.push(doc.data());
+          let updateValue = selectedAccounts;
+          updateValue[doc.data().code] = false;
+          setSelectedAccounts(updateValue);
         });
         setAccounts(locationsArray);
-        setSelected(locationsArray[0].id);
+        setSelected(locationsArray[0].code);
         if (selectedAccounts !== undefined) {
           setSelectedAccounts({
             ...selectedAccounts,
-            [locationsArray[0].id]: true,
+            [locationsArray[0].code]: true,
           });
         }
         setLoading({ locations: false });
@@ -80,7 +79,7 @@ function FinanceTracker() {
    * Move the setters out of this funciton
    * Make sure the document you're fetching has a date.
    */
-  const fetchAllDocuments = (docName, uid) => {
+  const fetchAllDocumentsForUser = (docName, uid) => {
     const docsRef = db
       .collection(docName)
       .where("uid", "==", uid)
@@ -118,7 +117,7 @@ function FinanceTracker() {
     console.log("Selected Account:", location);
     if (!compare) {
       let updated = accounts.map(
-        (account) => (selectedAccounts[account.id] = false)
+        (account) => (selectedAccounts[account.code] = false)
       );
       updated[location] = true;
       setSelectedAccounts(updated);
@@ -139,25 +138,21 @@ function FinanceTracker() {
   const processData = (savings) => {
     console.log("Processing account data");
     const newArray = savings
-      .map((entry) => (
-        entry.data()
-      ))
+      .map((entry) => entry.data())
       .sort((a, b) => a.date.seconds - b.date.seconds);
-    console.log("newArray", newArray)
-    newArray.forEach(
-      (entry) => {
-        try {
-          entry.date = new Date(entry.date.seconds * 1000)
-            .toISOString()
-            .substring(0, 10);
-        } catch (err) {
-          // TODO: find out where this error is occuring
-          // console.log("ERROR", err);
-          console.log("ERROR", entry.date);
-        }
+    console.log("newArray", newArray);
+    newArray.forEach((entry) => {
+      try {
+        entry.date = new Date(entry.date.seconds * 1000)
+          .toISOString()
+          .substring(0, 10);
+      } catch (err) {
+        // TODO: find out where this error is occuring
+        // console.log("ERROR", err);
+        console.log("ERROR", entry.date);
       }
-    );
-    return newArray
+    });
+    return newArray;
   };
 
   // preprocess data for charts
@@ -169,8 +164,8 @@ function FinanceTracker() {
   const setComparisonMode = () => {
     // if already in comparison mode, reset the selected accounts
     if (compare) {
-      accounts.map((account) => (selectedAccounts[account.id] = false));
-      setSelectedAccounts({ ...selectedAccounts, [accounts[0].id]: true });
+      accounts.map((account) => (selectedAccounts[account.code] = false));
+      setSelectedAccounts({ ...selectedAccounts, [accounts[0].code]: true });
     }
     setCompare(!compare);
   };
@@ -201,9 +196,9 @@ function FinanceTracker() {
 
   const formik = useFormik({
     initialValues: {
-      email: '',
+      email: "",
     },
-    onSubmit: values => {
+    onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2));
     },
   });
@@ -211,43 +206,31 @@ function FinanceTracker() {
   return (
     <>
       <UserLoginStatus auth={auth} />
-      <UploadCSVToDatabase />
-      <div>
-        <h1>Net Worth</h1>
-        <h1>{`Value: ${getLastInArray()}`}</h1>
-        <TotalsChart data={totalsData}></TotalsChart>
-      </div>
-      <AccountPicker
-        accounts={accounts}
+
+      <NetWorthDisplay totalsData={totalsData} />
+      <BankSelector
+        savings={savings}
+        selected={selected}
         handleSelectBucket={handleSelectAccount}
         selectedAccounts={selectedAccounts}
       />
-      <div className="flex">
-        <button
-          className={`text-gray-500 hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1 ${compare && "bg-blue-300 hover:bg-blue-200"
-            }`}
-          onClick={setComparisonMode}
-        >
-          Compare
-        </button>
-        {compare && (
-          <p className="text-gray-200">Multiple accounts can be selected</p>
-        )}
-      </div>
-
-      <Account
+      <CompareBanks compare={compare} setComparisonMode={setComparisonMode} />
+      <AccountHistoryBox
         setSavings={setSavings}
         accounts={accounts}
         data={processedData}
         investments={investments}
         selectedAccounts={selectedAccounts}
       />
-      <Modal title="Edit Data" size="xl" index={0}>
-        <EditDataTable savings={savings} handleDelete={handleDelete} />
+      <Modal title="Upload Data" size="lg" index={2}>
+        <UploadCSVToDatabase />
+      </Modal>  
+      <Modal title="View Data" size="xl" index={0}>
+        <AccountHistoryTable selectedBank={selected} savings={savings} handleDelete={handleDelete}/>
       </Modal>
       <Modal title="Add Data" size="lg" index={1}>
         <div>
-          <form onSubmit={formik.handleSubmit}>
+          {/* <form onSubmit={formik.handleSubmit}>
             <label htmlFor="email">Email Address</label>
             <input
               id="email"
@@ -258,7 +241,12 @@ function FinanceTracker() {
             />
 
             <button type="submit">Submit</button>
-          </form>
+          </form> */}
+          <AddAmountRecord
+            accounts={accounts}
+            savings={savings}
+            setSavings={setSavings}
+          />
         </div>
       </Modal>
     </>
@@ -266,5 +254,3 @@ function FinanceTracker() {
 }
 
 export default FinanceTracker;
-
-

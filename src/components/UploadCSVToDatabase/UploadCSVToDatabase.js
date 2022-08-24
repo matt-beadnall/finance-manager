@@ -7,7 +7,6 @@ import Papa from "papaparse";
 const allowedExtensions = ["csv"];
 
 export default function UploadCSVToDatabase() {
-  const [isDisplayed, setIsDisplayed] = useState(false);
 
   // It state will contain the error when
   // correct file extension is not used
@@ -77,11 +76,8 @@ export default function UploadCSVToDatabase() {
 
   return (
     <div >
-      <button className="flex hover:bg-blue-50 justify-start border-2 px-2 py-1 rounded-md m-1" onClick={() => setIsDisplayed(!isDisplayed)}>
-        {isDisplayed ? "X" : "Upload Data"}
-      </button>
-      {isDisplayed && (
-        <div className="m-1 p-2 bg-slate-100">
+      {(
+        <>
           <label htmlFor="csvInput" style={{ display: "block" }}>
             Enter CSV File
           </label>
@@ -95,7 +91,7 @@ export default function UploadCSVToDatabase() {
             Parse
           </button>
           {error && <p className="error">{error}</p>}
-        </div>
+        </>
       )}
     </div>
   );

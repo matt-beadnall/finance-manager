@@ -16,7 +16,6 @@ firebase.initializeApp(firebaseConfig);
 
 var db = firebase.firestore();
 if (window.location.hostname === "localhost") {
-    console.log("hello" )
     db.useEmulator("localhost", 8080);
 }
 

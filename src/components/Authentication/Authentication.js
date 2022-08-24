@@ -1,8 +1,8 @@
-import { firebase } from "../../firebase/firebaseConfig.js";
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import GoogleIcon from "../../images/google-svgrepo-com.svg";
 import React from "react";
+import { firebase } from "../../firebase/firebaseConfig.js";
 
 /**
  * Add a Google logo SVG
@@ -11,22 +11,9 @@ import React from "react";
 export function SignIn() {
   const signInWithGoogle = () => {
     const auth = getAuth();
-    if (window.location.hostname === "localhost") {
-      signInWithEmailAndPassword(auth, "matthewbeadnall@gmail.com", "hadouken")
-        .then((userCredential) => {
-          // Signed in 
-          const user = userCredential.user;
-          // ...
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          // ..
-        });
-    } else {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider);
-    }
+    
   };
 
   return (

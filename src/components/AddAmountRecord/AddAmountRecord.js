@@ -1,18 +1,19 @@
+import React, { useMemo } from "react";
 import { auth, db, firebase } from "../../firebase/firebaseConfig";
 
-import React from "react";
+import { sortData } from "../../functions/data-processing/DataCalculations";
 
-export function AddAmountRecord({ accounts, savings, setSavings }) {
-  const [visible, setVisible] = React.useState(false);
-  
+export function AddAmountRecord({ accounts, savings, setSavings }) {  
   //form values:
   const [selectedAccount, setSelectedAccount] = React.useState("");
   const [selectedAmount, setSelectedAmount] = React.useState(0);
   const [notes, setNotes] = React.useState("");
 
-  const { uid, photoURL } = auth.currentUser;
+  const { uid } = auth.currentUser;
 
   const savingsRef = db.collection('savings');
+
+  const sortedData = useMemo(() => sortData(savings), [savings]);
 
   const handleSelectChange = (e) => {
     e.preventDefault()
@@ -34,9 +35,7 @@ export function AddAmountRecord({ accounts, savings, setSavings }) {
 
   const uploadData = async (e) => {
     e.preventDefault();
-    // VALIDATION:
-    // check bank is selected
-    // check if amount is a number. Do not submit if not.
+
     const data = {
       amount: Number(selectedAmount),
       bank: selectedAccount,
@@ -55,8 +54,8 @@ export function AddAmountRecord({ accounts, savings, setSavings }) {
       setSelectedAccount('');
       setSelectedAmount(0);
       setNotes("");
-      savings.push(data)
-      setSavings(savings)
+      sortedData.push(data)
+      setSavings(sortedData)
     }
     setSelectedAccount('');
     setSelectedAmount(0);
@@ -73,19 +72,13 @@ export function AddAmountRecord({ accounts, savings, setSavings }) {
   
   return (
     <>
-      <button
-        onClick={() => setVisible(!visible)}
-        className="bg-white hover:bg-neutral-100 text-gray-500 border-2 py-1 px-2 rounded m-1"
-      >
-        Add Amount
-      </button>
       {
-        <div style={{ display: visible ? "block" : "none" }}>
+        <div >
           <form onSubmit={uploadData}>
             <select defaultValue={'DEFAULT'} onChange={handleSelectChange} name="account">
             <option disabled value="DEFAULT"> -- select an account -- </option>
               {accounts &&
-                accounts.map((account) => <option value={account.id}>{account.data().description}</option>)
+                accounts.map((account) => <option key={account.code} value={account.code}>{account.description}</option>)
                 }
             </select>
             <input placeholder="Amount" onChange={handleChangeAmount} />

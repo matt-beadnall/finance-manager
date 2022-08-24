@@ -1,4 +1,5 @@
 export const getLastInArray = (array) => {
+  console.log(array)
   return Array.isArray(array) ? array[array.length - 1] : null
 }
 

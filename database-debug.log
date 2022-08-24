@@ -1,11 +1,17 @@
 WARNING: An illegal reflective access operation has occurred
-WARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (file:/Users/matthewbe/.cache/firebase/emulators/firebase-database-emulator-v4.8.0.jar) to field sun.nio.ch.SelectorImpl.selectedKeys
+WARNING: Illegal reflective access by io.netty.util.internal.ReflectionUtil (file:/Users/mattbeadnall/.cache/firebase/emulators/firebase-database-emulator-v4.8.0.jar) to field sun.nio.ch.SelectorImpl.selectedKeys
 WARNING: Please consider reporting this to the maintainers of io.netty.util.internal.ReflectionUtil
 WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
 WARNING: All illegal access operations will be denied in a future release
-18:41:34.053 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
-18:41:34.290 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
-18:41:35.665 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - fake-server successfully activated FBKV (SurveyIdle(0)) wait: 205ms, init: 0ms
-18:41:48.622 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - finance-manager-baf55-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 2ms, init: 0ms
-18:41:48.715 [NamespaceSystem-blocking-namespace-operation-dispatcher-9:finance-manager-baf55-default-rtdb$-395498761:] INFO com.firebase.core.namespace.StateManager - Namespace finance-manager-baf55-default-rtdb status Active to Active
-18:42:53.511 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - finance-manager-baf55 successfully activated FBKV (SurveyIdle(0)) wait: 2ms, init: 0ms
+21:59:48.991 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+21:59:49.154 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
+22:00:06.664 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - finance-manager-baf55-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 145ms, init: 0ms
+22:00:06.719 [NamespaceSystem-blocking-namespace-operation-dispatcher-6:finance-manager-baf55-default-rtdb$112001374:] INFO com.firebase.core.namespace.StateManager - Namespace finance-manager-baf55-default-rtdb status Active to Active
+22:19:58.598 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - finance-manager-baf55 successfully activated FBKV (SurveyIdle(0)) wait: 17ms, init: 0ms
+22:32:39.240 [NamespaceSystem-akka.actor.default-dispatcher-24] INFO com.firebase.core.namespace.NamespaceActor - fake-server successfully activated FBKV (SurveyIdle(0)) wait: 8ms, init: 0ms
+21:32:39.017 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
+21:32:39.045 [NamespaceSystem-akka.actor.default-dispatcher-38] INFO com.firebase.core.namespace.Terminator$Terminator - 3 actors left to terminate: finance-manager-baf55, fake-server, finance-manager-baf55-default-rtdb
+21:32:39.065 [NamespaceSystem-akka.actor.default-dispatcher-10] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for fake-server
+21:32:39.065 [NamespaceSystem-akka.actor.default-dispatcher-32] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for finance-manager-baf55
+21:32:39.065 [NamespaceSystem-akka.actor.default-dispatcher-51] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for finance-manager-baf55-default-rtdb
+21:32:39.077 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.

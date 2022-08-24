@@ -13,7 +13,7 @@ export function UserLoginStatus({ auth }) {
         }
         alt=""
       />
-      <div>
+    <div>
         <h3>{displayName}</h3>
         <SignOut />
       </div>
